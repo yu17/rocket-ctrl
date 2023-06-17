@@ -40,7 +40,7 @@ const uint8_t LoRa_Bandwidth = LORA_BW_125;          //LoRa bandwidth
 const uint8_t LoRa_SpreadingFactor = LORA_SF7;       //LoRa spreading factor
 const uint8_t LoRa_CodeRate = LORA_CR_4_5;           //LoRa coding rate
 const uint8_t LoRa_Optimisation = LDRO_AUTO;         //low data rate optimisation setting, normally set to auto
-const int8_t LoRa_TXpower = 10;                      //LoRa transmit power in dBm;for SX1262, SX1268 power range is +22dBm to -9dBm
+const int8_t LoRa_TXpower = 22;                      //LoRa transmit power in dBm;for SX1262, SX1268 power range is +22dBm to -9dBm
 
 const uint16_t packet_delay = 1000;             //mS delay between packets
 
@@ -70,7 +70,8 @@ struct packet_frame_t{
 	uint8_t magicnum;
 	uint8_t sig;
 	uint16_t cid;
-	uint8_t fields[250];
+	uint8_t pid;
+	uint8_t fields[240];
 } pk_frame;
 
 struct packet_time_t{
@@ -161,6 +162,7 @@ void setup() {
 	delay(500);
 	pk_frame.magicnum=LORAGPS_MAG_HEAD;
 	pk_frame.cid=LORAGPS_CLIENTID;
+	pk_frame.pid=0;
 }
 
 void loop() {
@@ -202,26 +204,31 @@ void loop() {
 	}
 	else if (!(TICK%128-20)) {
 		pk_frame.sig=LORAGPS_TYP_TIME;
+		pk_frame.pid++;
 		memcpy(pk_frame.fields,&pk_time,sizeof(struct packet_time_t));
 		LoRa.transmit((uint8_t *)&pk_frame,sizeof(struct packet_frame_t),0,LoRa_TXpower,WAIT_TX);
 	}
 	else if (!(TICK%128-40)) {
 		pk_frame.sig=LORAGPS_TYP_CORD;
+		pk_frame.pid++;
 		memcpy(pk_frame.fields,&pk_cord,sizeof(struct packet_cord_t));
 		LoRa.transmit((uint8_t *)&pk_frame,sizeof(struct packet_frame_t),0,LoRa_TXpower,WAIT_TX);
 	}
 	else if (!(TICK%128-60)) {
 		pk_frame.sig=LORAGPS_TYP_MOTN;
+		pk_frame.pid++;
 		memcpy(pk_frame.fields,&pk_motn,sizeof(struct packet_motn_t));
 		LoRa.transmit((uint8_t *)&pk_frame,sizeof(struct packet_frame_t),0,LoRa_TXpower,WAIT_TX);
 	}
 	else if (!(TICK%128-80)) {
 		pk_frame.sig=LORAGPS_TYP_ACCR;
+		pk_frame.pid++;
 		memcpy(pk_frame.fields,&pk_accr,sizeof(struct packet_accr_t));
 		LoRa.transmit((uint8_t *)&pk_frame,sizeof(struct packet_frame_t),0,LoRa_TXpower,WAIT_TX);
 	}
 	else if (!(TICK%128-100)) {
 		pk_frame.sig=LORAGPS_TYP_POSE;
+		pk_frame.pid++;
 		memcpy(pk_frame.fields,&pk_pose,sizeof(struct packet_pose_t));
 		LoRa.transmit((uint8_t *)&pk_frame,sizeof(struct packet_frame_t),0,LoRa_TXpower,WAIT_TX);
 	}
