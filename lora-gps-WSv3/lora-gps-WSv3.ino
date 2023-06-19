@@ -63,6 +63,7 @@ uint8_t *PacketBuffer[255];
 #define GY271_I2C_SCL 48
 
 // ----- MISC -----
+bool vext_powered;
 uint8_t TICK;
 char c;
 
@@ -128,15 +129,9 @@ struct packet_ctrl_t{
 	uint8_t parameter[LORAGPS_CTRL_PARAMLEN];
 } pk_ctrl;
 
-//void disp_switch(){
-//	if (disp_flag_on) disp.ssd1306_command(SSD1306_DISPLAYOFF);
-//	else disp.ssd1306_command(SSD1306_DISPLAYON);
-//	disp_flag_on=!disp_flag_on;
-//}
-//
-//void disp_swdisplay(Adafruit_SSD1306 *disp){
-//	if (disp_flag_on) disp->display();
-//}
+void disp_swdisplay(Adafruit_SSD1306 *disp){
+	if (disp_flag_on) disp->display();
+}
 
 // Command RX Daemon
 
@@ -150,8 +145,6 @@ void func_shipctrl_rx(void *param) {
 		PacketSNR=LoRa.readPacketSNR();
 		PacketID=pk_probe.pid;
 		if (PacketLen && pk_probe.magicnum==LORAGPS_MAG_HEAD) {
-			sprintf(buffer,"received: %x",pk_probe.sig);
-			Serial.println(buffer);
 			switch (pk_probe.sig) {
 				case LORAGPS_CTRL_POWR_OFF:
 					digitalWrite(36,HIGH);
@@ -166,6 +159,22 @@ void func_shipctrl_rx(void *param) {
 				case LORAGPS_CTRL_LED_OFF:
 					digitalWrite(LED,LOW);
 					break;
+				case LORAGPS_CTRL_GPSD_ON:
+					digitalWrite(36,LOW);
+					vext_powered=1;
+					break;
+				case LORAGPS_CTRL_GPSD_OFF:
+					digitalWrite(36,HIGH);
+					vext_powered=0;
+					break;
+				case LORAGPS_CTRL_DISP_ON:
+					disp_flag_on=1;
+					disp.ssd1306_command(SSD1306_DISPLAYON);
+					break;
+				case LORAGPS_CTRL_DISP_OFF:
+					disp_flag_on=0;
+					disp.ssd1306_command(SSD1306_DISPLAYOFF);
+					break;
 			}
 		}
 	}
@@ -175,12 +184,11 @@ void setup() {
 	Serial.begin(115200);
 	pinMode(36,OUTPUT);
 	digitalWrite(36,LOW);
+	vext_powered=1;
 	TICK=0;
 	// OLED -- initialization
 	I2C_SSD1306.begin(SCREEN_I2C_SDA,SCREEN_I2C_SCL,100000);
-	Serial.println(">>> Display trial");
 	while (!disp.begin(SSD1306_SWITCHCAPVCC, SCREEN_ADDRESS)) delay(2000);
-	Serial.println(">>> Display inited");
 	disp.clearDisplay();
 	disp_flag_on=1;
 	// text output initialization routine
@@ -192,31 +200,28 @@ void setup() {
 	disp.display();
 	// LED -- turn off on startup
 	pinMode(LED,OUTPUT);
-//	disp.write(">>> LED test\n");
-//	disp.display();
+	disp.write(">>> LED test\n");
+	disp.display();
 	digitalWrite(LED,HIGH);
 	delay(500);
 	digitalWrite(LED,LOW);
-	Serial.println(">>> LED test");
 	// PRGSW -- detect default voltage and reset
 	pinMode(PRGSW_PIN,INPUT);
 	PRGSW_def=digitalRead(PRGSW_PIN);
 	PRGSW_act=0;
-//	if (PRGSW_def) disp.write(">>> PRGSW HIGH\n");
-//	else disp.write(">>> PRGSW LOW\n");
-//	disp.display();
+	if (PRGSW_def) disp.write(">>> PRGSW HIGH\n");
+	else disp.write(">>> PRGSW LOW\n");
+	disp.display();
 	// Serial/GPS -- Todo: GPS module communication
 	Serial1.begin(9600,SERIAL_8N1,34,33);
-//	disp.write(">>> GPS online\n");
-//	disp.display();
-	Serial.println(">>> GPS online");
+	disp.write(">>> GPS online\n");
+	disp.display();
 	// LoRa -- initialization
 	SPI.begin(SCK_LoRa,MISO_LoRa,MOSI_LoRa,SS_LoRa);
 	while (!LoRa.begin(SS_LoRa,RST_LoRa,BUSY_LoRa,DIO1_LoRa,SW_LoRa,DEVICE_SX1262)) delay(2000);
 	LoRa.setupLoRa(LoRa_Freq, LoRa_Offset, LoRa_SpreadingFactor, LoRa_Bandwidth, LoRa_CodeRate, LoRa_Optimisation);
-//	disp.write(">>> LoRa online\n");
-//	disp.display();
-	Serial.println(">>> LoRa online");
+	disp.write(">>> LoRa online\n");
+	disp.display();
 //	I2C_GY521.begin(GY521_I2C_SDA,GY521_I2C_SCL,100000);
 //	if (gyro.begin()) Serial.println(">>> GY521 online");
 //	else Serial.println(">>> GY521 failure");

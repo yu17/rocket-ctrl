@@ -5,7 +5,7 @@ void menu_render(struct menuitem_t *item, uint8_t pos, uint8_t scale) {
 	// Scale=2 ==> line space=32pixels, 4 entries per page, 10 characters per line
 	disp.clearDisplay();
 	disp.setTextSize(scale);
-	disp.setCursor(6*scale, 8*scale*pos);
+	disp.setCursor(0, 8*scale*pos);
 	//disp.write(item->desc, 32-11*scale);
 	disp.write(item->desc);
 	uint8_t pospt=pos;
@@ -13,7 +13,7 @@ void menu_render(struct menuitem_t *item, uint8_t pos, uint8_t scale) {
 	while (pospt>0 && itempt->prev) {
 		pospt--;
 		itempt=itempt->prev;
-		disp.setCursor(6*scale, 8*scale*pospt);
+		disp.setCursor(0, 8*scale*pospt);
 		disp.write(itempt->desc);
 	}
 	pospt=pos;
@@ -21,11 +21,12 @@ void menu_render(struct menuitem_t *item, uint8_t pos, uint8_t scale) {
 	while (pospt<(11-scale*4) && itempt->next) {
 		pospt++;
 		itempt=itempt->next;
-		disp.setCursor(6*scale, 8*scale*pospt);
+		disp.setCursor(0, 8*scale*pospt);
 		disp.write(itempt->desc);
 	}
-	disp.setCursor(0, 8*scale*pos);
-	disp.write(">");
+	//disp.setCursor(0, 8*scale*pos);
+	//disp.write(">");
+	for (uint8_t i=8*scale*pos;i<8*scale*(pos+1);i++) disp.drawFastHLine(0,i,DISPLAY_WIDTH,SSD1306_INVERSE);
 	disp.display();
 }
 

@@ -155,8 +155,9 @@ struct menuitem_t *shipctrl_menu(uint8_t levels[]) {
 			item->desc="Tx On";
 			item->enter_behavior=0;
 			item->drop_menu=0;
-			item->enter=NULL;
-			item->param=NULL;
+			item->enter=&func_tracker_shipctrl_sendcommand;
+			item->param=item->param=malloc(sizeof(uint8_t)+sizeof(struct packet_ctrl_t));
+			((uint8_t*)(item->param))[0]=LORAGPS_CTRL_LORA_ON;
 			item->prev=NULL;
 			//3-2-Turn off broadcasting
 			item->next=(struct menuitem_t*)malloc(sizeof(struct menuitem_t));
@@ -166,8 +167,9 @@ struct menuitem_t *shipctrl_menu(uint8_t levels[]) {
 			item->desc="Tx Off";
 			item->enter_behavior=0;
 			item->drop_menu=0;
-			item->enter=NULL;
-			item->param=NULL;
+			item->enter=&func_tracker_shipctrl_sendcommand;
+			item->param=item->param=malloc(sizeof(uint8_t)+sizeof(struct packet_ctrl_t));
+			((uint8_t*)(item->param))[0]=LORAGPS_CTRL_LORA_OFF;
 			//3-3-Set broadcast interval
 			item->next=(struct menuitem_t*)malloc(sizeof(struct menuitem_t));
 			item->next->prev=item;
@@ -180,7 +182,45 @@ struct menuitem_t *shipctrl_menu(uint8_t levels[]) {
 			item->param=NULL;
 			item->next=NULL;
 		}
+	}
+	else if (levels[0]==4) {
+		if (levels[1]==0) {
+			// 4-Display
+			menu=(struct menuitem_t*)malloc(sizeof(struct menuitem_t));
+			//4-1-Display On
+			struct menuitem_t *item=menu;
+			item->id=1;
+			item->desc="Power On";
+			item->enter_behavior=1;
+			item->drop_menu=0;
+			item->enter=&func_tracker_shipctrl_sendcommand;
+			item->param=item->param=malloc(sizeof(uint8_t)+sizeof(struct packet_ctrl_t));
+			((uint8_t*)(item->param))[0]=LORAGPS_CTRL_DISP_ON;
+			item->prev=NULL;
+			//4-2-Display Off
+			item->next=(struct menuitem_t*)malloc(sizeof(struct menuitem_t));
+			item->next->prev=item;
+			item=item->next;
+			item->id=2;
+			item->desc="Power Off";
+			item->enter_behavior=1;
+			item->drop_menu=0;
+			item->enter=&func_tracker_shipctrl_sendcommand;
+			item->param=item->param=malloc(sizeof(uint8_t)+sizeof(struct packet_ctrl_t));
+			((uint8_t*)(item->param))[0]=LORAGPS_CTRL_DISP_OFF;
+			//4-3-Display Content
+			item->next=(struct menuitem_t*)malloc(sizeof(struct menuitem_t));
+			item->next->prev=item;
+			item=item->next;
+			item->id=3;
+			item->desc="Content";
+			item->enter_behavior=0;
+			item->drop_menu=0;
+			item->enter=NULL;
+			item->param=NULL;
+			item->next=NULL;
 		}
+	}
 	else if (levels[0]==5) {
 		// 5-Power Off
 		menu=(struct menuitem_t*)malloc(sizeof(struct menuitem_t));
