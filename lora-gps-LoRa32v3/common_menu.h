@@ -19,4 +19,6 @@ void menu_render(struct menuitem_t *item, uint8_t pos, uint8_t scale);
 
 void menu_destroy(struct menuitem_t *item);
 
+uint8_t menu_exec(struct menuitem_t* (*menu_loader)(uint8_t[]));
+
 #endif

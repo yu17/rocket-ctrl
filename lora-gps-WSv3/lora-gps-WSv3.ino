@@ -18,8 +18,8 @@
 #define SCREEN_I2C_SDA 17
 #define SCREEN_I2C_SCL 18
 
-//TwoWire I2C_SSD1306=TwoWire(0);
-//Adafruit_SSD1306 disp(SCREEN_WIDTH, SCREEN_HEIGHT, &I2C_SSD1306, RST_OLED);
+TwoWire I2C_SSD1306=TwoWire(1);
+Adafruit_SSD1306 disp(SCREEN_WIDTH, SCREEN_HEIGHT, &I2C_SSD1306, RST_OLED);
 bool disp_flag_on;
 
 // ----- PRGSW -----
@@ -46,11 +46,21 @@ const uint16_t packet_delay = 1000;             //mS delay between packets
 
 SX126XLT LoRa;
 
+int8_t PacketRSSI;
+int8_t PacketSNR;
+uint8_t PacketLen;
+uint8_t PacketID;
+uint8_t *PacketBuffer[255];
+
 // ----- GY521 -----
-#define GY521_I2C_SDA 46
-#define GY521_I2C_SCL 45
-TwoWire I2C_GY521=TwoWire(0);
-GY521 gyro(0x68, &I2C_GY521);
+//#define GY521_I2C_SDA 46
+//#define GY521_I2C_SCL 45
+//TwoWire I2C_GY521=TwoWire(0);
+//GY521 gyro(0x68, &I2C_GY521);
+
+// ----- GY271 -----
+#define GY271_I2C_SDA 47
+#define GY271_I2C_SCL 48
 
 // ----- MISC -----
 uint8_t TICK;
@@ -60,19 +70,38 @@ char c;
 #define LORAGPS_CLIENTID 0x1001
 
 #define LORAGPS_MAG_HEAD 0x89
-#define LORAGPS_TYP_TIME 0x30
-#define LORAGPS_TYP_CORD 0x32
-#define LORAGPS_TYP_MOTN 0x34
-#define LORAGPS_TYP_ACCR 0x36
-#define LORAGPS_TYP_POSE 0x38
+#define LORAGPS_INFO_TIME 0x30
+#define LORAGPS_INFO_CORD 0x32
+#define LORAGPS_INFO_MOTN 0x34
+#define LORAGPS_INFO_ACCR 0x36
+#define LORAGPS_INFO_POSE 0x38
+
+#define LORAGPS_CTRL_POWR_ON 0x60
+#define LORAGPS_CTRL_POWR_OFF 0x61
+#define LORAGPS_CTRL_LED_ON 0x62
+#define LORAGPS_CTRL_LED_OFF 0x63
+#define LORAGPS_CTRL_LED_FLASH 0x64
+#define LORAGPS_CTRL_LED_HEARTBEAT 0x65
+#define LORAGPS_CTRL_GPSD_ON 0x70
+#define LORAGPS_CTRL_GPSD_OFF 0x71
+#define LORAGPS_CTRL_GPSD_FREQ 0x72
+#define LORAGPS_CTRL_LORA_ON 0x80
+#define LORAGPS_CTRL_LORA_OFF 0x81
+#define LORAGPS_CTRL_LORA_INT 0x82
+#define LORAGPS_CTRL_DISP_ON 0x90
+#define LORAGPS_CTRL_DISP_OFF 0x91
+
+#define LORAGPS_CTRL_PARAMLEN 4
 
 struct packet_frame_t{
 	uint8_t magicnum;
-	uint8_t sig;
-	uint16_t cid;
 	uint8_t pid;
+	uint16_t cid;
+	uint8_t sig;
 	uint8_t fields[240];
 } pk_frame;
+
+const size_t packet_header_size=sizeof(uint8_t)*3+sizeof(uint16_t);
 
 struct packet_time_t{
 	uint8_t hour,minute,second;
@@ -95,8 +124,9 @@ struct packet_pose_t{
 	float temperature,agl_x,agl_y,agl_z,pitch,roll,yaw;
 } pk_pose;
 
-//void GY521_update(){
-
+struct packet_ctrl_t{
+	uint8_t parameter[LORAGPS_CTRL_PARAMLEN];
+} pk_ctrl;
 
 //void disp_switch(){
 //	if (disp_flag_on) disp.ssd1306_command(SSD1306_DISPLAYOFF);
@@ -108,23 +138,58 @@ struct packet_pose_t{
 //	if (disp_flag_on) disp->display();
 //}
 
+// Command RX Daemon
+
+TaskHandle_t Task_Comm;
+
+void func_shipctrl_rx(void *param) {
+	struct packet_frame_t pk_probe;
+	while (1) {
+		PacketLen=LoRa.receive((uint8_t *)&pk_probe, sizeof(struct packet_frame_t), 0, WAIT_RX);
+		PacketRSSI=LoRa.readPacketRSSI();
+		PacketSNR=LoRa.readPacketSNR();
+		PacketID=pk_probe.pid;
+		if (PacketLen && pk_probe.magicnum==LORAGPS_MAG_HEAD) {
+			sprintf(buffer,"received: %x",pk_probe.sig);
+			Serial.println(buffer);
+			switch (pk_probe.sig) {
+				case LORAGPS_CTRL_POWR_OFF:
+					digitalWrite(36,HIGH);
+					rtc_gpio_init(GPIO_NUM_0);
+					rtc_gpio_pullup_en(GPIO_NUM_0);
+					esp_sleep_enable_ext0_wakeup(GPIO_NUM_0,LOW);
+					esp_deep_sleep_start();
+					break;
+				case LORAGPS_CTRL_LED_ON:
+					digitalWrite(LED,HIGH);
+					break;
+				case LORAGPS_CTRL_LED_OFF:
+					digitalWrite(LED,LOW);
+					break;
+			}
+		}
+	}
+}
+
 void setup() {
 	Serial.begin(115200);
+	pinMode(36,OUTPUT);
+	digitalWrite(36,LOW);
 	TICK=0;
 	// OLED -- initialization
-//	I2C_SSD1306.begin(SCREEN_I2C_SDA,SCREEN_I2C_SCL,100000);
-//	Serial.println(">>> Display trial");
-//	while (!disp.begin(SSD1306_SWITCHCAPVCC, SCREEN_ADDRESS)) delay(2000);
-//	Serial.println(">>> Display inited");
-//	disp.clearDisplay();
-//	disp_flag_on=1;
-//	// text output initialization routine
-//	disp.setTextSize(1);
-//	disp.setTextColor(SSD1306_WHITE);
-//	disp.setCursor(0, 0);
-//	disp.cp437(true);
-//	disp.write(">>> Display inited\n");
-//	disp.display();
+	I2C_SSD1306.begin(SCREEN_I2C_SDA,SCREEN_I2C_SCL,100000);
+	Serial.println(">>> Display trial");
+	while (!disp.begin(SSD1306_SWITCHCAPVCC, SCREEN_ADDRESS)) delay(2000);
+	Serial.println(">>> Display inited");
+	disp.clearDisplay();
+	disp_flag_on=1;
+	// text output initialization routine
+	disp.setTextSize(1);
+	disp.setTextColor(SSD1306_WHITE);
+	disp.setCursor(0, 0);
+	disp.cp437(true);
+	disp.write(">>> Display inited\n");
+	disp.display();
 	// LED -- turn off on startup
 	pinMode(LED,OUTPUT);
 //	disp.write(">>> LED test\n");
@@ -141,8 +206,6 @@ void setup() {
 //	else disp.write(">>> PRGSW LOW\n");
 //	disp.display();
 	// Serial/GPS -- Todo: GPS module communication
-	pinMode(36,OUTPUT);
-	digitalWrite(36,LOW);
 	Serial1.begin(9600,SERIAL_8N1,34,33);
 //	disp.write(">>> GPS online\n");
 //	disp.display();
@@ -163,6 +226,8 @@ void setup() {
 	pk_frame.magicnum=LORAGPS_MAG_HEAD;
 	pk_frame.cid=LORAGPS_CLIENTID;
 	pk_frame.pid=0;
+
+	xTaskCreatePinnedToCore(func_shipctrl_rx,"Comm RX",100000,NULL,0,&Task_Comm,0);
 }
 
 void loop() {
@@ -203,34 +268,34 @@ void loop() {
 //		pk_pose.yaw=gyro.getYaw();
 	}
 	else if (!(TICK%128-20)) {
-		pk_frame.sig=LORAGPS_TYP_TIME;
+		pk_frame.sig=LORAGPS_INFO_TIME;
 		pk_frame.pid++;
 		memcpy(pk_frame.fields,&pk_time,sizeof(struct packet_time_t));
-		LoRa.transmit((uint8_t *)&pk_frame,sizeof(struct packet_frame_t),0,LoRa_TXpower,WAIT_TX);
+		LoRa.transmit((uint8_t *)&pk_frame,packet_header_size+sizeof(struct packet_time_t),0,LoRa_TXpower,WAIT_TX);
 	}
 	else if (!(TICK%128-40)) {
-		pk_frame.sig=LORAGPS_TYP_CORD;
+		pk_frame.sig=LORAGPS_INFO_CORD;
 		pk_frame.pid++;
 		memcpy(pk_frame.fields,&pk_cord,sizeof(struct packet_cord_t));
-		LoRa.transmit((uint8_t *)&pk_frame,sizeof(struct packet_frame_t),0,LoRa_TXpower,WAIT_TX);
+		LoRa.transmit((uint8_t *)&pk_frame,packet_header_size+sizeof(struct packet_cord_t),0,LoRa_TXpower,WAIT_TX);
 	}
 	else if (!(TICK%128-60)) {
-		pk_frame.sig=LORAGPS_TYP_MOTN;
+		pk_frame.sig=LORAGPS_INFO_MOTN;
 		pk_frame.pid++;
 		memcpy(pk_frame.fields,&pk_motn,sizeof(struct packet_motn_t));
-		LoRa.transmit((uint8_t *)&pk_frame,sizeof(struct packet_frame_t),0,LoRa_TXpower,WAIT_TX);
+		LoRa.transmit((uint8_t *)&pk_frame,packet_header_size+sizeof(struct packet_motn_t),0,LoRa_TXpower,WAIT_TX);
 	}
 	else if (!(TICK%128-80)) {
-		pk_frame.sig=LORAGPS_TYP_ACCR;
+		pk_frame.sig=LORAGPS_INFO_ACCR;
 		pk_frame.pid++;
 		memcpy(pk_frame.fields,&pk_accr,sizeof(struct packet_accr_t));
-		LoRa.transmit((uint8_t *)&pk_frame,sizeof(struct packet_frame_t),0,LoRa_TXpower,WAIT_TX);
+		LoRa.transmit((uint8_t *)&pk_frame,packet_header_size+sizeof(struct packet_accr_t),0,LoRa_TXpower,WAIT_TX);
 	}
 	else if (!(TICK%128-100)) {
-		pk_frame.sig=LORAGPS_TYP_POSE;
+		pk_frame.sig=LORAGPS_INFO_POSE;
 		pk_frame.pid++;
 		memcpy(pk_frame.fields,&pk_pose,sizeof(struct packet_pose_t));
-		LoRa.transmit((uint8_t *)&pk_frame,sizeof(struct packet_frame_t),0,LoRa_TXpower,WAIT_TX);
+		LoRa.transmit((uint8_t *)&pk_frame,packet_header_size+sizeof(struct packet_pose_t),0,LoRa_TXpower,WAIT_TX);
 	}
 	delay(10);
 }

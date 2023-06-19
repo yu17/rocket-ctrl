@@ -13,6 +13,6 @@ extern struct menuitem_t *mainmenu;
 
 struct menuitem_t *mainmenu_load(uint8_t levels[]);
 
-uint8_t app_mainmenu();
+//uint8_t app_mainmenu();
 
 #endif

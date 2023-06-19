@@ -138,7 +138,7 @@ struct menuitem_t *mainmenu_load(uint8_t levels[]) {
 				item->enter_behavior=1;
 				item->drop_menu=0;
 				item->enter=&func_quick_settings;
-				item->param=malloc(sizeof(int));
+				item->param=malloc(sizeof(uint8_t));
 				*((int*)(item->param))=SYS_VOLT_1;
 				item->prev=NULL;
 				//4-1-2-2-Background Voltage Update Disabled
@@ -150,7 +150,7 @@ struct menuitem_t *mainmenu_load(uint8_t levels[]) {
 				item->enter_behavior=1;
 				item->drop_menu=0;
 				item->enter=&func_quick_settings;
-				item->param=malloc(sizeof(int));
+				item->param=malloc(sizeof(uint8_t));
 				*((int*)(item->param))=SYS_VOLT_2;
 				item->next=NULL;
 			}
@@ -163,7 +163,7 @@ struct menuitem_t *mainmenu_load(uint8_t levels[]) {
 				item->enter_behavior=1;
 				item->drop_menu=0;
 				item->enter=&func_quick_settings;
-				item->param=malloc(sizeof(int));
+				item->param=malloc(sizeof(uint8_t));
 				*((int*)(item->param))=SYS_TEMP_1;
 				item->prev=NULL;
 				//4-1-3-2-Background Chip Temperature Update Disabled
@@ -175,7 +175,7 @@ struct menuitem_t *mainmenu_load(uint8_t levels[]) {
 				item->enter_behavior=1;
 				item->drop_menu=0;
 				item->enter=&func_quick_settings;
-				item->param=malloc(sizeof(int));
+				item->param=malloc(sizeof(uint8_t));
 				*((int*)(item->param))=SYS_TEMP_2;
 				item->next=NULL;
 			}
@@ -224,7 +224,7 @@ struct menuitem_t *mainmenu_load(uint8_t levels[]) {
 				item->enter_behavior=1;
 				item->drop_menu=0;
 				item->enter=&func_quick_settings;
-				item->param=malloc(sizeof(int));
+				item->param=malloc(sizeof(uint8_t));
 				*((int*)(item->param))=SYS_GPS_1_1;
 				item->prev=NULL;
 				//4-2-1-2-GPS Power Off
@@ -236,7 +236,7 @@ struct menuitem_t *mainmenu_load(uint8_t levels[]) {
 				item->enter_behavior=1;
 				item->drop_menu=0;
 				item->enter=&func_quick_settings;
-				item->param=malloc(sizeof(int));
+				item->param=malloc(sizeof(uint8_t));
 				*((int*)(item->param))=SYS_GPS_1_2;
 				item->next=NULL;
 			}
@@ -249,7 +249,7 @@ struct menuitem_t *mainmenu_load(uint8_t levels[]) {
 				item->enter_behavior=1;
 				item->drop_menu=0;
 				item->enter=&func_quick_settings;
-				item->param=malloc(sizeof(int));
+				item->param=malloc(sizeof(uint8_t));
 				*((int*)(item->param))=SYS_GPS_2_1;
 				item->prev=NULL;
 				//4-2-2-2-GPS Background Update Disabled
@@ -261,7 +261,7 @@ struct menuitem_t *mainmenu_load(uint8_t levels[]) {
 				item->enter_behavior=1;
 				item->drop_menu=0;
 				item->enter=&func_quick_settings;
-				item->param=malloc(sizeof(int));
+				item->param=malloc(sizeof(uint8_t));
 				*((int*)(item->param))=SYS_GPS_2_2;
 				item->next=NULL;
 			}
@@ -274,7 +274,7 @@ struct menuitem_t *mainmenu_load(uint8_t levels[]) {
 				item->enter_behavior=1;
 				item->drop_menu=0;
 				item->enter=&func_quick_settings;
-				item->param=malloc(sizeof(int));
+				item->param=malloc(sizeof(uint8_t));
 				*((int*)(item->param))=SYS_GPS_3_1;
 				item->prev=NULL;
 				//4-2-3-2-GPS Freq 1Hz
@@ -286,7 +286,7 @@ struct menuitem_t *mainmenu_load(uint8_t levels[]) {
 				item->enter_behavior=0;
 				item->drop_menu=0;
 				item->enter=&func_quick_settings;
-				item->param=malloc(sizeof(int));
+				item->param=malloc(sizeof(uint8_t));
 				*((int*)(item->param))=SYS_GPS_3_2;
 				//4-2-3-3-GPS Freq 2Hz
 				item->next=(struct menuitem_t*)malloc(sizeof(struct menuitem_t));
@@ -297,7 +297,7 @@ struct menuitem_t *mainmenu_load(uint8_t levels[]) {
 				item->enter_behavior=0;
 				item->drop_menu=0;
 				item->enter=&func_quick_settings;
-				item->param=malloc(sizeof(int));
+				item->param=malloc(sizeof(uint8_t));
 				*((int*)(item->param))=SYS_GPS_3_3;
 				//4-2-3-4-GPS Freq 5Hz
 				item->next=(struct menuitem_t*)malloc(sizeof(struct menuitem_t));
@@ -308,7 +308,7 @@ struct menuitem_t *mainmenu_load(uint8_t levels[]) {
 				item->enter_behavior=0;
 				item->drop_menu=0;
 				item->enter=&func_quick_settings;
-				item->param=malloc(sizeof(int));
+				item->param=malloc(sizeof(uint8_t));
 				*((int*)(item->param))=SYS_GPS_3_4;
 				item->next=NULL;
 			}
@@ -318,70 +318,6 @@ struct menuitem_t *mainmenu_load(uint8_t levels[]) {
 }
 
 // main menu program
-uint8_t app_mainmenu() {
-	uint8_t menu_stack[10];
-	memset(&menu_stack,0,10*sizeof(uint8_t));
-	uint8_t stackpt=0;
-	uint8_t pos=0;
-	struct menuitem_t *item=mainmenu_load(menu_stack);
-	void* (*enter)(void*)=NULL;
-	void* param=NULL;
-	char key;
-	while (item) {
-		menu_render(item, pos, 2);
-		key=kbd_read(4);
-		switch (key) {
-			case 'A':
-				if (item->prev) {
-					item=item->prev;
-					if (pos>1 || (pos==1 && !item->prev)) pos--;
-				}
-				break;
-			case 'B':
-				if (item->next) {
-					item=item->next;
-					if (pos<2 || (pos==2 && !item->next)) pos++;
-				}
-				break;
-			case 'C':
-				if (stackpt) {
-					stackpt--;
-					pos=menu_stack[stackpt];
-					menu_stack[stackpt]=0;
-					menu_destroy(item);
-					item=mainmenu_load(menu_stack);
-					while (item->id!=pos && item->next) item=item->next;
-					if (pos==1) pos=0;
-					else pos=1;
-				}
-				else {
-					menu_destroy(item);
-					item=NULL;
-				}
-				break;
-			case 'D':
-				if (item->enter_behavior) {
-					if (item->drop_menu) {
-						enter=item->enter;
-						param=item->param;
-						menu_destroy(item);
-						item=NULL;
-					}
-					else (*(item->enter))(item->param);
-				}
-				else {
-					menu_stack[stackpt++]=item->id;
-					menu_destroy(item);
-					item=mainmenu_load(menu_stack);
-					pos=0;
-				}
-				break;
-			default:
-				break;
-		}
-	}
-	disp.clearDisplay();
-	disp.display();
-	if (enter) (*enter)(param);
-	return 0;
-}
+//void app_mainmenu() {
+//	menu_exec(mainmenu_load);
+//}

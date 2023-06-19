@@ -1,6 +1,217 @@
 #include "app_shiptracker.h"
 
-//tracker maintain shipdb
+const size_t packet_header_size=sizeof(uint8_t)*3+sizeof(uint16_t);
+
+// ship control
+struct menuitem_t *shipctrl_menu(uint8_t levels[]) {
+	struct menuitem_t *menu=NULL;
+	if (levels[0]==0) {
+		// Main menu
+		menu=(struct menuitem_t*)malloc(sizeof(struct menuitem_t));
+		//1-LED
+		struct menuitem_t *item=menu;
+		item->id=1;
+		item->desc="LED";
+		item->enter_behavior=0;
+		item->drop_menu=0;
+		item->enter=NULL;
+		item->param=NULL;
+		item->prev=NULL;
+		//2-LoRa
+		item->next=(struct menuitem_t*)malloc(sizeof(struct menuitem_t));
+		item->next->prev=item;
+		item=item->next;
+		item->id=2;
+		item->desc="GPS";
+		item->enter_behavior=0;
+		item->drop_menu=0;
+		item->enter=NULL;
+		item->param=NULL;
+		//3-LoRa
+		item->next=(struct menuitem_t*)malloc(sizeof(struct menuitem_t));
+		item->next->prev=item;
+		item=item->next;
+		item->id=3;
+		item->desc="LoRa";
+		item->enter_behavior=0;
+		item->drop_menu=0;
+		item->enter=NULL;
+		item->param=NULL;
+		//4-Display
+		item->next=(struct menuitem_t*)malloc(sizeof(struct menuitem_t));
+		item->next->prev=item;
+		item=item->next;
+		item->id=4;
+		item->desc="Display";
+		item->enter_behavior=0;
+		item->drop_menu=0;
+		item->enter=NULL;
+		item->param=NULL;
+		//5-Power Off
+		item->next=(struct menuitem_t*)malloc(sizeof(struct menuitem_t));
+		item->next->prev=item;
+		item=item->next;
+		item->id=5;
+		item->desc="Power Off";
+		item->enter_behavior=0;
+		item->drop_menu=0;
+		item->enter=NULL;
+		item->param=NULL;
+		item->next=NULL;
+	}
+	else if (levels[0]==1) {
+		// 1-LED
+		menu=(struct menuitem_t*)malloc(sizeof(struct menuitem_t));
+		//1-1-LED On
+		struct menuitem_t *item=menu;
+		item->id=1;
+		item->desc="On";
+		item->enter_behavior=1;
+		item->drop_menu=0;
+		item->enter=&func_tracker_shipctrl_sendcommand;
+		item->param=item->param=malloc(sizeof(uint8_t)+sizeof(struct packet_ctrl_t));
+		((uint8_t*)(item->param))[0]=LORAGPS_CTRL_LED_ON;
+		item->prev=NULL;
+		//1-2-LED Off
+		item->next=(struct menuitem_t*)malloc(sizeof(struct menuitem_t));
+		item->next->prev=item;
+		item=item->next;
+		item->id=2;
+		item->desc="Off";
+		item->enter_behavior=1;
+		item->drop_menu=0;
+		item->enter=&func_tracker_shipctrl_sendcommand;
+		item->param=item->param=malloc(sizeof(uint8_t)+sizeof(struct packet_ctrl_t));
+		((uint8_t*)(item->param))[0]=LORAGPS_CTRL_LED_OFF;
+		//1-3-LED Flash
+		item->next=(struct menuitem_t*)malloc(sizeof(struct menuitem_t));
+		item->next->prev=item;
+		item=item->next;
+		item->id=3;
+		item->desc="Flash";
+		item->enter_behavior=1;
+		item->drop_menu=0;
+		item->enter=&func_tracker_shipctrl_sendcommand;
+		item->param=item->param=malloc(sizeof(uint8_t)+sizeof(struct packet_ctrl_t));
+		((uint8_t*)(item->param))[0]=LORAGPS_CTRL_LED_FLASH;
+		//1-4-LED Flash on Receiving Hearbeat Packet
+		item->next=(struct menuitem_t*)malloc(sizeof(struct menuitem_t));
+		item->next->prev=item;
+		item=item->next;
+		item->id=4;
+		item->desc="Heartbeat";
+		item->enter_behavior=1;
+		item->drop_menu=0;
+		item->enter=&func_tracker_shipctrl_sendcommand;
+		item->param=item->param=malloc(sizeof(uint8_t)+sizeof(struct packet_ctrl_t));
+		((uint8_t*)(item->param))[0]=LORAGPS_CTRL_LED_HEARTBEAT;
+		item->next=NULL;
+	}
+	else if (levels[0]==2) {
+		if (levels[1]==0) {
+			// 2-GPS
+			menu=(struct menuitem_t*)malloc(sizeof(struct menuitem_t));
+			//2-1-GPS On
+			struct menuitem_t *item=menu;
+			item->id=1;
+			item->desc="Power On";
+			item->enter_behavior=1;
+			item->drop_menu=0;
+			item->enter=&func_tracker_shipctrl_sendcommand;
+			item->param=item->param=malloc(sizeof(uint8_t)+sizeof(struct packet_ctrl_t));
+			((uint8_t*)(item->param))[0]=LORAGPS_CTRL_GPSD_ON;
+			item->prev=NULL;
+			//2-2-GPS Off
+			item->next=(struct menuitem_t*)malloc(sizeof(struct menuitem_t));
+			item->next->prev=item;
+			item=item->next;
+			item->id=2;
+			item->desc="Power Off";
+			item->enter_behavior=1;
+			item->drop_menu=0;
+			item->enter=&func_tracker_shipctrl_sendcommand;
+			item->param=item->param=malloc(sizeof(uint8_t)+sizeof(struct packet_ctrl_t));
+			((uint8_t*)(item->param))[0]=LORAGPS_CTRL_GPSD_OFF;
+			//2-3-Set GPS frequency
+			item->next=(struct menuitem_t*)malloc(sizeof(struct menuitem_t));
+			item->next->prev=item;
+			item=item->next;
+			item->id=3;
+			item->desc="Frequency";
+			item->enter_behavior=0;
+			item->drop_menu=0;
+			item->enter=NULL;
+			item->param=NULL;
+			item->next=NULL;
+		}
+	}
+	else if (levels[0]==3) {
+		if (levels[1]==0) {
+			// 3-LoRa
+			menu=(struct menuitem_t*)malloc(sizeof(struct menuitem_t));
+			//3-1-Turn on broadcasting
+			struct menuitem_t *item=menu;
+			item->id=1;
+			item->desc="Tx On";
+			item->enter_behavior=0;
+			item->drop_menu=0;
+			item->enter=NULL;
+			item->param=NULL;
+			item->prev=NULL;
+			//3-2-Turn off broadcasting
+			item->next=(struct menuitem_t*)malloc(sizeof(struct menuitem_t));
+			item->next->prev=item;
+			item=item->next;
+			item->id=2;
+			item->desc="Tx Off";
+			item->enter_behavior=0;
+			item->drop_menu=0;
+			item->enter=NULL;
+			item->param=NULL;
+			//3-3-Set broadcast interval
+			item->next=(struct menuitem_t*)malloc(sizeof(struct menuitem_t));
+			item->next->prev=item;
+			item=item->next;
+			item->id=3;
+			item->desc="Interval";
+			item->enter_behavior=0;
+			item->drop_menu=0;
+			item->enter=NULL;
+			item->param=NULL;
+			item->next=NULL;
+		}
+		}
+	else if (levels[0]==5) {
+		// 5-Power Off
+		menu=(struct menuitem_t*)malloc(sizeof(struct menuitem_t));
+			//5-1-Power Off Whole System
+			struct menuitem_t *item=menu;
+			item->id=1;
+			item->desc="CONFIRM";
+			item->enter_behavior=1;
+			item->drop_menu=0;
+			item->enter=&func_tracker_shipctrl_sendcommand;
+			item->param=item->param=malloc(sizeof(uint8_t)+sizeof(struct packet_ctrl_t));
+			((uint8_t*)(item->param))[0]=LORAGPS_CTRL_POWR_OFF;
+			item->prev=NULL;
+			item->next=NULL;
+	}
+	return menu;
+}
+
+void* func_tracker_shipctrl_sendcommand(void* param) {
+	struct packet_frame_t pk_comm;
+	pk_comm.magicnum=LORAGPS_MAG_HEAD;
+	pk_comm.pid=0;
+	pk_comm.cid=LORAGPS_HANDHELDID;
+	memcpy(&(pk_comm.sig), param, sizeof(uint8_t)+sizeof(struct packet_ctrl_t));
+	LoRa.transmit((uint8_t *)&pk_comm, packet_header_size+sizeof(struct packet_ctrl_t),0,LoRa_TXpower,WAIT_TX);
+	sprintf(buffer,"%x,%x",pk_comm.sig,pk_comm.fields[0]);
+	Serial.println(buffer);
+	return NULL;
+}
+
+// tracker maintain shipdb
 void func_tracker_shiplist_update(void *param) {
 	if (!param) return;
 	struct ship_list_t *shiplist=(struct ship_list_t *)param;
@@ -22,19 +233,19 @@ void func_tracker_shiplist_update(void *param) {
 				shiplist->ship=ship;
 			}
 			switch (pk_probe.sig) {
-				case LORAGPS_TYP_TIME:
+				case LORAGPS_INFO_TIME:
 					memcpy(&(ship->ship_time),pk_probe.fields,sizeof(struct packet_time_t));
 					break;
-				case LORAGPS_TYP_CORD:
+				case LORAGPS_INFO_CORD:
 					memcpy(&(ship->ship_cord),pk_probe.fields,sizeof(struct packet_cord_t));
 					break;
-				case LORAGPS_TYP_MOTN:
+				case LORAGPS_INFO_MOTN:
 					memcpy(&(ship->ship_motn),pk_probe.fields,sizeof(struct packet_motn_t));
 					break;
-				case LORAGPS_TYP_ACCR:
+				case LORAGPS_INFO_ACCR:
 					memcpy(&(ship->ship_accr),pk_probe.fields,sizeof(struct packet_accr_t));
 					break;
-				case LORAGPS_TYP_POSE:
+				case LORAGPS_INFO_POSE:
 					memcpy(&(ship->ship_pose),pk_probe.fields,sizeof(struct packet_pose_t));
 					break;
 			}
@@ -155,8 +366,10 @@ void func_tracker_shipinfo(struct ship_data_t *ship) {
 				if (page<1) page++;
 				break;
 			case 'C':
-			case 'D':
 				runflag=0;
+				break;
+			case 'D':
+				menu_exec(&shipctrl_menu);
 				break;
 		}
 		delay(TICKINT);

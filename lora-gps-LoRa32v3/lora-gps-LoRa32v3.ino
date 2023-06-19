@@ -7,7 +7,6 @@
 #include <Adafruit_Sensor.h>
 #include <Adafruit_BME680.h>
 
-#include "conf_global.h"
 #include "conf_lora.h"
 #include "resc_display.h"
 #include "resc_keyboard.h"
@@ -101,7 +100,7 @@ void loop() {
 	c=kbd_read(0);
 	if (c=='P') disp_switch();
 	if (c=='D'&&disp_flag_on) {
-		app_mainmenu();
+		menu_exec(mainmenu_load);
 		TICK=0;
 	}
 	if (!TICK%10) {
