@@ -90,6 +90,9 @@ void func_shipinfo_update() {
 	pk_cord.altitude=GPS.altitude.meters();
 	pk_motn.speed=GPS.speed.mps();
 	pk_motn.course=GPS.course.value();
+	pk_motn.compass=compass.readHeading();
+
+	pk_motn.bat=batvolt_value;
 
 //	gyro.read();
 //	pk_accr.acc_x=gyro.getAccelX();
@@ -115,11 +118,11 @@ void func_shipinfo_broadcast_daemon(void* param) {
 	while (1) {
 		func_shipinfo_update();
 
-		pk_frame.sig=LORAGPS_INFO_TIME;
-		pk_frame.pid++;
-		memcpy(pk_frame.fields,&pk_time,sizeof(struct packet_time_t));
-		LoRa.transmit((uint8_t *)&pk_frame,packet_header_size+sizeof(struct packet_time_t),0,LoRa_TXpower,WAIT_TX);
-		delay(100);
+		//pk_frame.sig=LORAGPS_INFO_TIME;
+		//pk_frame.pid++;
+		//memcpy(pk_frame.fields,&pk_time,sizeof(struct packet_time_t));
+		//LoRa.transmit((uint8_t *)&pk_frame,packet_header_size+sizeof(struct packet_time_t),0,LoRa_TXpower,WAIT_TX);
+		//delay(100);
 
 		pk_frame.sig=LORAGPS_INFO_CORD;
 		pk_frame.pid++;
@@ -133,17 +136,19 @@ void func_shipinfo_broadcast_daemon(void* param) {
 		LoRa.transmit((uint8_t *)&pk_frame,packet_header_size+sizeof(struct packet_motn_t),0,LoRa_TXpower,WAIT_TX);
 		delay(100);
 
-		pk_frame.sig=LORAGPS_INFO_ACCR;
-		pk_frame.pid++;
-		memcpy(pk_frame.fields,&pk_accr,sizeof(struct packet_accr_t));
-		LoRa.transmit((uint8_t *)&pk_frame,packet_header_size+sizeof(struct packet_accr_t),0,LoRa_TXpower,WAIT_TX);
-		delay(100);
+		//pk_frame.sig=LORAGPS_INFO_ACCR;
+		//pk_frame.pid++;
+		//memcpy(pk_frame.fields,&pk_accr,sizeof(struct packet_accr_t));
+		//LoRa.transmit((uint8_t *)&pk_frame,packet_header_size+sizeof(struct packet_accr_t),0,LoRa_TXpower,WAIT_TX);
+		//delay(100);
 
-		pk_frame.sig=LORAGPS_INFO_POSE;
-		pk_frame.pid++;
-		memcpy(pk_frame.fields,&pk_pose,sizeof(struct packet_pose_t));
-		LoRa.transmit((uint8_t *)&pk_frame,packet_header_size+sizeof(struct packet_pose_t),0,LoRa_TXpower,WAIT_TX);
-		delay(400);
+		//pk_frame.sig=LORAGPS_INFO_POSE;
+		//pk_frame.pid++;
+		//memcpy(pk_frame.fields,&pk_pose,sizeof(struct packet_pose_t));
+		//LoRa.transmit((uint8_t *)&pk_frame,packet_header_size+sizeof(struct packet_pose_t),0,LoRa_TXpower,WAIT_TX);
+		//delay(100);
+
+		delay(600);
 	}
 }
 
@@ -156,11 +161,15 @@ void func_lora_setup() {
 }
 
 void func_shipinfo_broadcast_enable() {
-	broadcast_bg_runflag=1;
-	xTaskCreate(func_shipinfo_broadcast_daemon,"Shipinfo Broadcast",100000,NULL,0,&Task_Broadcast);
+	if (!broadcast_bg_runflag) {
+		broadcast_bg_runflag=1;
+		xTaskCreatePinnedToCore(func_shipinfo_broadcast_daemon,"Shipinfo Broadcast",100000,NULL,0,&Task_Broadcast,0);
+	}
 }
 
 void func_shipinfo_broadcast_disable() {
-	vTaskDelete(Task_Broadcast);
-	broadcast_bg_runflag=0;
+	if (broadcast_bg_runflag) {
+		vTaskDelete(Task_Broadcast);
+		broadcast_bg_runflag=0;
+	}
 }

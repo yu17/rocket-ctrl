@@ -8,6 +8,7 @@
 #include "mod_disp.h"
 #include "mod_gps.h"
 #include "mod_lora.h"
+#include "mod_compass.h"
 
 
 // ----- GY521 -----
@@ -15,10 +16,6 @@
 //#define GY521_I2C_SCL 45
 //TwoWire I2C_GY521=TwoWire(0);
 //GY521 gyro(0x68, &I2C_GY521);
-
-// ----- GY271 -----
-#define GY271_I2C_SDA 47
-#define GY271_I2C_SCL 48
 
 void setup() {
 	Serial.begin(115200);
@@ -50,6 +47,9 @@ void setup() {
 	func_shipinfo_broadcast_enable();
 	disp.write(">>> LoRa online\n");
 	disp.display();
+	func_compass_init();
+	disp.write(">>> Compass online\n");
+	disp.display();
 //	I2C_GY521.begin(GY521_I2C_SDA,GY521_I2C_SCL,100000);
 //	if (gyro.begin()) Serial.println(">>> GY521 online");
 //	else Serial.println(">>> GY521 failure");
@@ -61,6 +61,6 @@ void setup() {
 
 void loop() {
 	TICK++;
-
-	sleep(600);
+	func_batvolt_update(NULL);
+	sleep(1);
 }

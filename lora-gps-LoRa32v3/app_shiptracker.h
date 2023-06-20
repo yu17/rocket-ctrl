@@ -65,7 +65,8 @@ struct packet_cord_t{
 
 struct packet_motn_t{
 	double speed;
-	int32_t course;
+	int32_t course,compass;
+	float bat;
 };
 
 struct packet_accr_t{

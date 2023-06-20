@@ -10,6 +10,7 @@
 #include "common_misc.h"
 #include "mod_disp.h"
 #include "mod_gps.h"
+#include "mod_compass.h"
 
 #define LORA_DEVICE DEVICE_SX1262               //we need to define the device we are using
 
@@ -79,7 +80,8 @@ struct packet_cord_t{
 
 struct packet_motn_t{
 	double speed;
-	int32_t course;
+	int32_t course,compass;
+	float bat;
 };
 
 struct packet_accr_t{

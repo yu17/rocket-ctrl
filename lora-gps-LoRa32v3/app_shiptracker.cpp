@@ -66,7 +66,7 @@ struct menuitem_t *shipctrl_menu(uint8_t levels[]) {
 		struct menuitem_t *item=menu;
 		item->id=1;
 		item->desc="On";
-		item->enter_behavior=1;
+		item->enter_behavior=2;
 		item->drop_menu=0;
 		item->enter=&func_tracker_shipctrl_sendcommand;
 		item->param=item->param=malloc(sizeof(uint8_t)+sizeof(struct packet_ctrl_t));
@@ -78,7 +78,7 @@ struct menuitem_t *shipctrl_menu(uint8_t levels[]) {
 		item=item->next;
 		item->id=2;
 		item->desc="Off";
-		item->enter_behavior=1;
+		item->enter_behavior=2;
 		item->drop_menu=0;
 		item->enter=&func_tracker_shipctrl_sendcommand;
 		item->param=item->param=malloc(sizeof(uint8_t)+sizeof(struct packet_ctrl_t));
@@ -89,7 +89,7 @@ struct menuitem_t *shipctrl_menu(uint8_t levels[]) {
 		item=item->next;
 		item->id=3;
 		item->desc="Flash";
-		item->enter_behavior=1;
+		item->enter_behavior=2;
 		item->drop_menu=0;
 		item->enter=&func_tracker_shipctrl_sendcommand;
 		item->param=item->param=malloc(sizeof(uint8_t)+sizeof(struct packet_ctrl_t));
@@ -100,7 +100,7 @@ struct menuitem_t *shipctrl_menu(uint8_t levels[]) {
 		item=item->next;
 		item->id=4;
 		item->desc="Heartbeat";
-		item->enter_behavior=1;
+		item->enter_behavior=2;
 		item->drop_menu=0;
 		item->enter=&func_tracker_shipctrl_sendcommand;
 		item->param=item->param=malloc(sizeof(uint8_t)+sizeof(struct packet_ctrl_t));
@@ -115,7 +115,7 @@ struct menuitem_t *shipctrl_menu(uint8_t levels[]) {
 			struct menuitem_t *item=menu;
 			item->id=1;
 			item->desc="Power On";
-			item->enter_behavior=1;
+			item->enter_behavior=2;
 			item->drop_menu=0;
 			item->enter=&func_tracker_shipctrl_sendcommand;
 			item->param=item->param=malloc(sizeof(uint8_t)+sizeof(struct packet_ctrl_t));
@@ -127,7 +127,7 @@ struct menuitem_t *shipctrl_menu(uint8_t levels[]) {
 			item=item->next;
 			item->id=2;
 			item->desc="Power Off";
-			item->enter_behavior=1;
+			item->enter_behavior=2;
 			item->drop_menu=0;
 			item->enter=&func_tracker_shipctrl_sendcommand;
 			item->param=item->param=malloc(sizeof(uint8_t)+sizeof(struct packet_ctrl_t));
@@ -153,7 +153,7 @@ struct menuitem_t *shipctrl_menu(uint8_t levels[]) {
 			struct menuitem_t *item=menu;
 			item->id=1;
 			item->desc="Tx On";
-			item->enter_behavior=0;
+			item->enter_behavior=2;
 			item->drop_menu=0;
 			item->enter=&func_tracker_shipctrl_sendcommand;
 			item->param=item->param=malloc(sizeof(uint8_t)+sizeof(struct packet_ctrl_t));
@@ -165,7 +165,7 @@ struct menuitem_t *shipctrl_menu(uint8_t levels[]) {
 			item=item->next;
 			item->id=2;
 			item->desc="Tx Off";
-			item->enter_behavior=0;
+			item->enter_behavior=2;
 			item->drop_menu=0;
 			item->enter=&func_tracker_shipctrl_sendcommand;
 			item->param=item->param=malloc(sizeof(uint8_t)+sizeof(struct packet_ctrl_t));
@@ -191,7 +191,7 @@ struct menuitem_t *shipctrl_menu(uint8_t levels[]) {
 			struct menuitem_t *item=menu;
 			item->id=1;
 			item->desc="Power On";
-			item->enter_behavior=1;
+			item->enter_behavior=2;
 			item->drop_menu=0;
 			item->enter=&func_tracker_shipctrl_sendcommand;
 			item->param=item->param=malloc(sizeof(uint8_t)+sizeof(struct packet_ctrl_t));
@@ -203,7 +203,7 @@ struct menuitem_t *shipctrl_menu(uint8_t levels[]) {
 			item=item->next;
 			item->id=2;
 			item->desc="Power Off";
-			item->enter_behavior=1;
+			item->enter_behavior=2;
 			item->drop_menu=0;
 			item->enter=&func_tracker_shipctrl_sendcommand;
 			item->param=item->param=malloc(sizeof(uint8_t)+sizeof(struct packet_ctrl_t));
@@ -228,7 +228,7 @@ struct menuitem_t *shipctrl_menu(uint8_t levels[]) {
 			struct menuitem_t *item=menu;
 			item->id=1;
 			item->desc="CONFIRM";
-			item->enter_behavior=1;
+			item->enter_behavior=2;
 			item->drop_menu=0;
 			item->enter=&func_tracker_shipctrl_sendcommand;
 			item->param=item->param=malloc(sizeof(uint8_t)+sizeof(struct packet_ctrl_t));
@@ -246,8 +246,6 @@ void* func_tracker_shipctrl_sendcommand(void* param) {
 	pk_comm.cid=LORAGPS_HANDHELDID;
 	memcpy(&(pk_comm.sig), param, sizeof(uint8_t)+sizeof(struct packet_ctrl_t));
 	LoRa.transmit((uint8_t *)&pk_comm, packet_header_size+sizeof(struct packet_ctrl_t),0,LoRa_TXpower,WAIT_TX);
-	sprintf(buffer,"%x,%x",pk_comm.sig,pk_comm.fields[0]);
-	Serial.println(buffer);
 	return NULL;
 }
 
@@ -302,8 +300,14 @@ void func_tracker_shipinfo(struct ship_data_t *ship) {
 		disp.clearDisplay();
 		disp.setTextSize(1);
 		if (page==0) {
-			disp.setCursor(6, 0);
-			sprintf(buffer,"%04d-%02d-%02d %02d:%02d:%02d",GPS.date.year(),GPS.date.month(),GPS.date.day(),GPS.time.hour(),GPS.time.minute(),GPS.time.second());
+			//disp.setCursor(6, 0);
+			//sprintf(buffer,"%04d-%02d-%02d %02d:%02d:%02d",GPS.date.year(),GPS.date.month(),GPS.date.day(),GPS.time.hour(),GPS.time.minute(),GPS.time.second());
+			//disp.write(buffer);
+			disp.setCursor(0, 0);
+			sprintf(buffer,"%02d:%02d:%02d",GPS.time.hour(),GPS.time.minute(),GPS.time.second());
+			disp.write(buffer);
+			disp.setCursor(6*15, 0);
+			sprintf(buffer,"%.3fV",ship->ship_motn.bat);
 			disp.write(buffer);
 			disp.setCursor(0, 8);
 			sprintf(buffer,"%9.6f%c",abs(ship->ship_cord.latitude),ship->ship_cord.latitude<0?'S':'N');
@@ -343,6 +347,9 @@ void func_tracker_shipinfo(struct ship_data_t *ship) {
 			sprintf(buffer,"RSSI: %d",PacketRSSI);
 			disp.write(buffer);
 			disp.setCursor(0, 56);
+			sprintf(buffer,"COMP: %d",ship->ship_motn.compass);
+			disp.write(buffer);
+			disp.setCursor(6*11, 56);
 			sprintf(buffer,"PKT: %d",PacketID);
 			disp.write(buffer);
 		}
@@ -489,6 +496,13 @@ void func_tracker_selship(struct ship_list_t *shiplist) {
 				break;
 			case 'D':
 				if (ship) func_tracker_shipinfo(ship);
+				break;
+			case '#':
+				uint8_t sig[sizeof(uint8_t)+sizeof(struct packet_ctrl_t)];
+				sig[0]=LORAGPS_CTRL_LORA_OFF;
+				func_tracker_shipctrl_sendcommand(&sig);
+				sig[0]=LORAGPS_CTRL_LORA_ON;
+				func_tracker_shipctrl_sendcommand(&sig);
 				break;
 		}
 		delay(TICKINT);

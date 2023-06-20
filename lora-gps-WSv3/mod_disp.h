@@ -6,8 +6,8 @@
 #include <Adafruit_SSD1306.h>
 
 // ----- OLED -----
-#define SCREEN_WIDTH 64
-#define SCREEN_HEIGHT 32
+#define SCREEN_WIDTH 128
+#define SCREEN_HEIGHT 64
 #define SCREEN_ADDRESS 0x3C
 #define SCREEN_I2C_SDA 17
 #define SCREEN_I2C_SCL 18

@@ -8,7 +8,7 @@
 struct menuitem_t{
 	uint8_t id;
 	const char *desc;
-	bool enter_behavior;//0 - Menu; 1 - Function
+	uint8_t enter_behavior;//0 - Menu; 1 - Function; 2 - Function with animation
 	bool drop_menu;
 	void* (*enter)(void*);
 	void *param;

@@ -14,4 +14,9 @@ extern char c;
 
 extern char buffer[BUFFER_SIZE];
 
+extern bool batvolt_flag_enabled;
+extern float batvolt_value;
+
+void func_batvolt_update(void *param);
+
 #endif

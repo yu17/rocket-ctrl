@@ -30,6 +30,16 @@ void menu_render(struct menuitem_t *item, uint8_t pos, uint8_t scale) {
 	disp.display();
 }
 
+void menu_render_animation(uint8_t pos, uint8_t scale, uint8_t speed) {
+	for (uint8_t i=8*scale*pos;i<8*scale*(pos+1);i++) disp.drawFastHLine(0,i,DISPLAY_WIDTH,SSD1306_INVERSE);
+	disp.display();
+	for (uint8_t i=0;i<DISPLAY_WIDTH;i+=speed) {
+		for (uint8_t j=0;j<speed && i+j<DISPLAY_WIDTH;j++) 
+			disp.drawFastVLine(i+j,8*scale*pos,8*scale,SSD1306_INVERSE);
+		disp.display();
+	}
+}
+
 void menu_destroy(struct menuitem_t *item) {
 	while (item->prev) item=item->prev;
 	while (item->next) {
@@ -83,6 +93,7 @@ uint8_t menu_exec(struct menuitem_t* (*menu_loader)(uint8_t[])) {
 				break;
 			case 'D':
 				if (item->enter_behavior) {
+					if (item->enter_behavior==2) menu_render_animation(pos,2,4);
 					if (item->drop_menu) {
 						enter=item->enter;
 						param=item->param;
