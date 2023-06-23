@@ -8,14 +8,13 @@
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
 #include <Adafruit_Sensor.h>
-#include <Adafruit_BME680.h>
 
 #include "resc_display.h"
-#include "resc_keyboard.h"
+#include "resc_joystick.h"
 #include "common_menu.h"
 #include "app_shiptracker.h"
 #include "app_gps.h"
-#include "app_bme680.h"
+#include "app_sensors.h"
 #include "app_mainmenu.h"
 
 // ----- Settings -----
@@ -32,21 +31,19 @@
 #define SYS_TEMP_1 0x02
 #define SYS_TEMP_2 0x03
 
+// ----- Secondary I2C -----
+#define I2C2_SDA 33
+#define I2C2_SCL 34
+
 // ----- MISC -----
 #define TICKINT 10
 #define BUFFER_SIZE 128
 
-// ----- BME680 -----
-#define BME680_I2C_SDA 3
-#define BME680_I2C_SCL 2
+extern TwoWire I2C2;
 
 extern uint8_t TICK;
 extern char buffer[BUFFER_SIZE];
 extern uint8_t buffer_pt;
-
-// ----- BME680 -----
-extern TwoWire I2C_BME680;
-extern Adafruit_BME680 BME680;
 
 // ----- Battery Voltage -----
 extern TaskHandle_t Task_batvolt;

@@ -3,6 +3,7 @@
 
 #include "common_misc.h"
 #include "resc_display.h"
+#include "resc_joystick.h"
 #include "resc_gps.h"
 
 void *app_gps(void *param);

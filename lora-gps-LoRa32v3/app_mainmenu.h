@@ -7,7 +7,7 @@
 #include "common_menu.h"
 #include "app_shiptracker.h"
 #include "app_gps.h"
-#include "app_bme680.h"
+#include "app_sensors.h"
 
 extern struct menuitem_t *mainmenu;
 

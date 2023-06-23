@@ -9,13 +9,14 @@
 
 #include "conf_lora.h"
 #include "resc_display.h"
-#include "resc_keyboard.h"
+//#include "resc_keyboard.h"
+#include "resc_joystick.h"
 #include "resc_gps.h"
 #include "common_misc.h"
 #include "common_menu.h"
 #include "app_shiptracker.h"
 #include "app_gps.h"
-#include "app_bme680.h"
+#include "app_sensors.h"
 #include "app_mainmenu.h"
 
 #define LORA_DEVICE DEVICE_SX1262               //we need to define the device we are using
@@ -24,18 +25,7 @@ void setup() {
 	TICK=0;
 	Serial.begin(115200);
 	// OLED -- initialization
-	I2C_SSD1306.begin(SCREEN_I2C_SDA,SCREEN_I2C_SCL,100000);
-	while (!disp.begin(SSD1306_SWITCHCAPVCC, SCREEN_ADDRESS)) delay(2000);
-	disp.clearDisplay();
-	disp_setbrightness(disp_brightness=20);
-	disp_flag_on=1;
-	// text output initialization routine
-	disp.setTextSize(1);
-	disp.setTextColor(SSD1306_WHITE);
-	disp.setCursor(0, 0);
-	disp.cp437(true);
-	disp.write(">>> Display inited\n");
-	disp.display();
+	disp_init();
 	// LED -- turn off on startup
 	pinMode(LED,OUTPUT);
 	disp.write(">>> LED test\n");
@@ -52,38 +42,18 @@ void setup() {
 	else disp.write(">>> PRGSW LOW\n");
 	disp.display();
 	// BME680
-	I2C_BME680.begin(BME680_I2C_SDA,BME680_I2C_SCL,100000);
-	if (BME680.begin()) {
-		BME680.setTemperatureOversampling(BME680_OS_8X);
-		BME680.setHumidityOversampling(BME680_OS_4X);
-		BME680.setPressureOversampling(BME680_OS_4X);
-		BME680.setIIRFilterSize(BME680_FILTER_SIZE_3);
-		disp.write(">>> BME680 online\n");
-		disp.display();
-	}
-	else {
-		disp.write(">>> BME680 failure\n");
-		disp.display();
-	}
+	bme680_init();
+	// Compass
+	compass_init();
 	// Battery Voltage
 	xTaskCreate(func_batvolt_update,"Battery Voltage",10000,NULL,0,&Task_batvolt);
 	batvolt_flag_enabled=true;
 	// Serial/GPS -- Todo: GPS module communication
-	pinMode(Vext,OUTPUT);
-	digitalWrite(Vext,LOW);
-	Serial1.begin(9600,SERIAL_8N1,46,45);
-	xTaskCreatePinnedToCore(func_GPS_update,"GPS Parse",100000,NULL,0,&Task_GPS,0);
-	GPS_bg_runflag=true;
-	disp.write(">>> GPS online\n");
-	disp.display();
+	GPS_init();
 	// Keyboard
-	for (uint8_t i=0;i<4;i++) {
-		pinMode(KBD_ROW[i],OUTPUT);
-		digitalWrite(KBD_ROW[i],HIGH);
-		pinMode(KBD_COL[i],INPUT_PULLUP);
-	}
-	disp.write(">>> Keyboard inited\n");
-	disp.display();
+	//kbd_init();
+	// Joystick
+	pinMode(JOY_BTN,INPUT_PULLUP);
 	// LoRa -- initialization
 	disp.display();
 	SPI.begin(SCK_LoRa,MISO_LoRa,MOSI_LoRa,SS_LoRa);
@@ -97,9 +67,9 @@ void setup() {
 }
 
 void loop() {
-	c=kbd_read(0);
-	if (c=='P') disp_switch();
-	if (c=='D'&&disp_flag_on) {
+	c=joy_read(0);
+	if (c==P) disp_switch();
+	if (c==R && disp_flag_on) {
 		menu_exec(mainmenu_load);
 		TICK=0;
 	}

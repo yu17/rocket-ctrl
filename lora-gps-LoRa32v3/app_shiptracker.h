@@ -13,19 +13,23 @@
 #include "common_misc.h"
 #include "conf_lora.h"
 #include "resc_display.h"
-#include "resc_keyboard.h"
+#include "resc_joystick.h"
 #include "resc_gps.h"
+#include "resc_bme680.h"
+#include "resc_QMC5883L.h"
 
 // ----- Comm Protocol -----
 #define LORAGPS_HANDHELDID 0x0001
 
-#define LORAGPS_MAG_HEAD 0x89
+#define LORAGPS_HHLD_HEAD 0xA0
+#define LORAGPS_TRCK_HEAD 0xA2
 
 #define LORAGPS_INFO_TIME 0x30
 #define LORAGPS_INFO_CORD 0x32
 #define LORAGPS_INFO_MOTN 0x34
-#define LORAGPS_INFO_ACCR 0x36
-#define LORAGPS_INFO_POSE 0x38
+#define LORAGPS_INFO_STAT 0x36
+#define LORAGPS_INFO_ACCR 0x38
+#define LORAGPS_INFO_POSE 0x3A
 
 #define LORAGPS_CTRL_POWR_ON 0x60
 #define LORAGPS_CTRL_POWR_OFF 0x61
@@ -66,7 +70,11 @@ struct packet_cord_t{
 struct packet_motn_t{
 	double speed;
 	int32_t course,compass;
-	float bat;
+};
+
+struct packet_stat_t{
+	float vbat,HDOP;
+	uint8_t SAT;
 };
 
 struct packet_accr_t{
@@ -87,6 +95,7 @@ struct ship_data_t{
 	struct packet_time_t ship_time;
 	struct packet_cord_t ship_cord;
 	struct packet_motn_t ship_motn;
+	struct packet_stat_t ship_stat;
 	struct packet_accr_t ship_accr;
 	struct packet_pose_t ship_pose;
 	struct ship_data_t *prev,*next;

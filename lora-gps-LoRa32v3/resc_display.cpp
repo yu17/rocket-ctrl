@@ -5,6 +5,21 @@ Adafruit_SSD1306 disp(SCREEN_WIDTH, SCREEN_HEIGHT, &I2C_SSD1306, RST_OLED);
 bool disp_flag_on;
 uint8_t disp_brightness;
 
+void disp_init() {
+	I2C_SSD1306.begin(SCREEN_I2C_SDA,SCREEN_I2C_SCL,100000);
+	while (!disp.begin(SSD1306_SWITCHCAPVCC, SCREEN_ADDRESS)) delay(2000);
+	disp.clearDisplay();
+	disp_setbrightness(disp_brightness=20);
+	disp_flag_on=1;
+	// text output initialization routine
+	disp.setTextSize(1);
+	disp.setTextColor(SSD1306_WHITE);
+	disp.setCursor(0, 0);
+	disp.cp437(true);
+	disp.write(">>> Display inited\n");
+	disp.display();
+}
+
 void disp_setup() {
 	I2C_SSD1306.begin(SCREEN_I2C_SDA,SCREEN_I2C_SCL,100000);
 	while (!disp.begin(SSD1306_SWITCHCAPVCC, SCREEN_ADDRESS)) delay(2000);

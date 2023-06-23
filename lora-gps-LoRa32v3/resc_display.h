@@ -20,6 +20,8 @@ extern Adafruit_SSD1306 disp;
 extern bool disp_flag_on;
 extern uint8_t disp_brightness;
 
+void disp_init();
+
 void disp_setup();
 
 void disp_switch();

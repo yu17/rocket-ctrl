@@ -241,7 +241,7 @@ struct menuitem_t *shipctrl_menu(uint8_t levels[]) {
 
 void* func_tracker_shipctrl_sendcommand(void* param) {
 	struct packet_frame_t pk_comm;
-	pk_comm.magicnum=LORAGPS_MAG_HEAD;
+	pk_comm.magicnum=LORAGPS_HHLD_HEAD;
 	pk_comm.pid=0;
 	pk_comm.cid=LORAGPS_HANDHELDID;
 	memcpy(&(pk_comm.sig), param, sizeof(uint8_t)+sizeof(struct packet_ctrl_t));
@@ -260,7 +260,7 @@ void func_tracker_shiplist_update(void *param) {
 		PacketRSSI=LoRa.readPacketRSSI();
 		PacketSNR=LoRa.readPacketSNR();
 		PacketID=pk_probe.pid;
-		if (PacketLen && pk_probe.magicnum==LORAGPS_MAG_HEAD) {
+		if (PacketLen && pk_probe.magicnum==LORAGPS_TRCK_HEAD) {
 			while (ship && ship->ship_cid!=pk_probe.cid) ship=ship->next;
 			if (!ship) {
 				ship=(struct ship_data_t *)malloc(sizeof(struct ship_data_t));
@@ -280,6 +280,9 @@ void func_tracker_shiplist_update(void *param) {
 				case LORAGPS_INFO_MOTN:
 					memcpy(&(ship->ship_motn),pk_probe.fields,sizeof(struct packet_motn_t));
 					break;
+				case LORAGPS_INFO_STAT:
+					memcpy(&(ship->ship_stat),pk_probe.fields,sizeof(struct packet_stat_t));
+					break;
 				case LORAGPS_INFO_ACCR:
 					memcpy(&(ship->ship_accr),pk_probe.fields,sizeof(struct packet_accr_t));
 					break;
@@ -295,7 +298,7 @@ void func_tracker_shiplist_update(void *param) {
 void func_tracker_shipinfo(struct ship_data_t *ship) {
 	bool runflag=1;
 	uint8_t page=0;
-	char key;
+	enum JOY_DISCRETE joy;
 	while (runflag) {
 		disp.clearDisplay();
 		disp.setTextSize(1);
@@ -307,7 +310,7 @@ void func_tracker_shipinfo(struct ship_data_t *ship) {
 			sprintf(buffer,"%02d:%02d:%02d",GPS.time.hour(),GPS.time.minute(),GPS.time.second());
 			disp.write(buffer);
 			disp.setCursor(6*15, 0);
-			sprintf(buffer,"%.3fV",ship->ship_motn.bat);
+			sprintf(buffer,"%.3fV",ship->ship_stat.vbat);
 			disp.write(buffer);
 			disp.setCursor(0, 8);
 			sprintf(buffer,"%9.6f%c",abs(ship->ship_cord.latitude),ship->ship_cord.latitude<0?'S':'N');
@@ -353,69 +356,69 @@ void func_tracker_shipinfo(struct ship_data_t *ship) {
 			sprintf(buffer,"PKT: %d",PacketID);
 			disp.write(buffer);
 		}
-		else if (page==1) {
-			disp.setCursor(6, 0);
-			sprintf(buffer,"%04d-%02d-%02d %02d:%02d:%02d",GPS.date.year(),GPS.date.month(),GPS.date.day(),GPS.time.hour(),GPS.time.minute(),GPS.time.second());
-			disp.write(buffer);
-			disp.setCursor(0, 8);
-			sprintf(buffer,"Accel/Gyro:");
-			disp.write(buffer);
-			disp.setCursor(0,16);
-			sprintf(buffer,"%7.2f",ship->ship_accr.acc_x);
-			disp.write(buffer);
-			disp.setCursor(6*7,16);
-			sprintf(buffer,"%7.2f",ship->ship_accr.acc_y);
-			disp.write(buffer);
-			disp.setCursor(6*14,16);
-			sprintf(buffer,"%7.2f",ship->ship_accr.acc_z);
-			disp.write(buffer);
-			disp.setCursor(0,24);
-			sprintf(buffer,"%7.2f",ship->ship_accr.gyro_x);
-			disp.write(buffer);
-			disp.setCursor(6*7,24);
-			sprintf(buffer,"%7.2f",ship->ship_accr.gyro_y);
-			disp.write(buffer);
-			disp.setCursor(6*14,24);
-			sprintf(buffer,"%7.2f",ship->ship_accr.gyro_z);
-			disp.write(buffer);
-			disp.setCursor(0,32);
-			sprintf(buffer,"Orientation:");
-			disp.write(buffer);
-			disp.setCursor(0,40);
-			sprintf(buffer,"%7.2f",ship->ship_pose.agl_x);
-			disp.write(buffer);
-			disp.setCursor(6*7,40);
-			sprintf(buffer,"%7.2f",ship->ship_pose.agl_y);
-			disp.write(buffer);
-			disp.setCursor(6*14,40);
-			sprintf(buffer,"%7.2f",ship->ship_pose.agl_z);
-			disp.write(buffer);
-			disp.setCursor(0,48);
-			sprintf(buffer,"%7.2f",ship->ship_pose.pitch);
-			disp.write(buffer);
-			disp.setCursor(6*7,48);
-			sprintf(buffer,"%7.2f",ship->ship_pose.roll);
-			disp.write(buffer);
-			disp.setCursor(6*14,48);
-			sprintf(buffer,"%7.2f",ship->ship_pose.yaw);
-			disp.write(buffer);
-			disp.setCursor(0,56);
-			sprintf(buffer,"Temperature: %.2f%cC",ship->ship_pose.temperature,248);
-			disp.write(buffer);
-		}
+//		else if (page==1) {
+//			disp.setCursor(6, 0);
+//			sprintf(buffer,"%04d-%02d-%02d %02d:%02d:%02d",GPS.date.year(),GPS.date.month(),GPS.date.day(),GPS.time.hour(),GPS.time.minute(),GPS.time.second());
+//			disp.write(buffer);
+//			disp.setCursor(0, 8);
+//			sprintf(buffer,"Accel/Gyro:");
+//			disp.write(buffer);
+//			disp.setCursor(0,16);
+//			sprintf(buffer,"%7.2f",ship->ship_accr.acc_x);
+//			disp.write(buffer);
+//			disp.setCursor(6*7,16);
+//			sprintf(buffer,"%7.2f",ship->ship_accr.acc_y);
+//			disp.write(buffer);
+//			disp.setCursor(6*14,16);
+//			sprintf(buffer,"%7.2f",ship->ship_accr.acc_z);
+//			disp.write(buffer);
+//			disp.setCursor(0,24);
+//			sprintf(buffer,"%7.2f",ship->ship_accr.gyro_x);
+//			disp.write(buffer);
+//			disp.setCursor(6*7,24);
+//			sprintf(buffer,"%7.2f",ship->ship_accr.gyro_y);
+//			disp.write(buffer);
+//			disp.setCursor(6*14,24);
+//			sprintf(buffer,"%7.2f",ship->ship_accr.gyro_z);
+//			disp.write(buffer);
+//			disp.setCursor(0,32);
+//			sprintf(buffer,"Orientation:");
+//			disp.write(buffer);
+//			disp.setCursor(0,40);
+//			sprintf(buffer,"%7.2f",ship->ship_pose.agl_x);
+//			disp.write(buffer);
+//			disp.setCursor(6*7,40);
+//			sprintf(buffer,"%7.2f",ship->ship_pose.agl_y);
+//			disp.write(buffer);
+//			disp.setCursor(6*14,40);
+//			sprintf(buffer,"%7.2f",ship->ship_pose.agl_z);
+//			disp.write(buffer);
+//			disp.setCursor(0,48);
+//			sprintf(buffer,"%7.2f",ship->ship_pose.pitch);
+//			disp.write(buffer);
+//			disp.setCursor(6*7,48);
+//			sprintf(buffer,"%7.2f",ship->ship_pose.roll);
+//			disp.write(buffer);
+//			disp.setCursor(6*14,48);
+//			sprintf(buffer,"%7.2f",ship->ship_pose.yaw);
+//			disp.write(buffer);
+//			disp.setCursor(0,56);
+//			sprintf(buffer,"Temperature: %.2f%cC",ship->ship_pose.temperature,248);
+//			disp.write(buffer);
+//		}
 		disp.display();
-		key=kbd_read(0);
-		switch (key) {
-			case 'A':
+		joy=joy_read(0);
+		switch (joy) {
+			case U:
 				if (page>0) page--;
 				break;
-			case 'B':
+			case D:
 				if (page<1) page++;
 				break;
-			case 'C':
+			case L:
 				runflag=0;
 				break;
-			case 'D':
+			case R:
 				menu_exec(&shipctrl_menu);
 				break;
 		}
@@ -470,37 +473,38 @@ void func_tracker_shiplist_render(struct ship_data_t *ship, uint8_t pos, uint8_t
 void func_tracker_selship(struct ship_list_t *shiplist) {
 	uint8_t pos=0;
 	struct ship_data_t *ship=shiplist->ship;
-	char key;
+	enum JOY_DISCRETE joy;
 	bool runflag=1;
 	while (runflag) {
 		if (!ship && shiplist->ship) {
 			ship=shiplist->ship;
 		}
 		func_tracker_shiplist_render(ship, pos, 2);
-		key=kbd_read(0);
-		switch (key) {
-			case 'A':
+		joy=joy_read(0);
+		switch (joy) {
+			case U:
 				if (ship && ship->prev) {
 					ship=ship->prev;
 					if (pos>1 || (pos==1 && !ship->prev)) pos--;
 				}
 				break;
-			case 'B':
+			case D:
 				if (ship && ship->next) {
 					ship=ship->next;
 					if (pos<2 || (pos==2 && !ship->next)) pos++;
 				}
 				break;
-			case 'C':
+			case L:
 				runflag=0;
 				break;
-			case 'D':
+			case R:
 				if (ship) func_tracker_shipinfo(ship);
 				break;
-			case '#':
+			case B:
 				uint8_t sig[sizeof(uint8_t)+sizeof(struct packet_ctrl_t)];
 				sig[0]=LORAGPS_CTRL_LORA_OFF;
 				func_tracker_shipctrl_sendcommand(&sig);
+				delay(100);
 				sig[0]=LORAGPS_CTRL_LORA_ON;
 				func_tracker_shipctrl_sendcommand(&sig);
 				break;

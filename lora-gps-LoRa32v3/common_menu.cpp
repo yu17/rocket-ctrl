@@ -58,24 +58,24 @@ uint8_t menu_exec(struct menuitem_t* (*menu_loader)(uint8_t[])) {
 	struct menuitem_t *item=menu_loader(menu_stack);
 	void* (*enter)(void*)=NULL;
 	void* param=NULL;
-	char key;
+	enum JOY_DISCRETE joy;
 	while (item) {
 		menu_render(item, pos, 2);
-		key=kbd_read(4);
-		switch (key) {
-			case 'A':
+		joy=joy_read(4);
+		switch (joy) {
+			case U:
 				if (item->prev) {
 					item=item->prev;
 					if (pos>1 || (pos==1 && !item->prev)) pos--;
 				}
 				break;
-			case 'B':
+			case D:
 				if (item->next) {
 					item=item->next;
 					if (pos<2 || (pos==2 && !item->next)) pos++;
 				}
 				break;
-			case 'C':
+			case L:
 				if (stackpt) {
 					stackpt--;
 					pos=menu_stack[stackpt];
@@ -91,7 +91,7 @@ uint8_t menu_exec(struct menuitem_t* (*menu_loader)(uint8_t[])) {
 					item=NULL;
 				}
 				break;
-			case 'D':
+			case R:
 				if (item->enter_behavior) {
 					if (item->enter_behavior==2) menu_render_animation(pos,2,4);
 					if (item->drop_menu) {

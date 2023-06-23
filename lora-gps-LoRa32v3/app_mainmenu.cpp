@@ -35,7 +35,7 @@ struct menuitem_t *mainmenu_load(uint8_t levels[]) {
 		item->desc="Sensors";
 		item->enter_behavior=1;
 		item->drop_menu=1;
-		item->enter=&app_bme680;
+		item->enter=&app_sensors;
 		item->param=NULL;
 		//4-Settings
 		item->next=(struct menuitem_t*)malloc(sizeof(struct menuitem_t));

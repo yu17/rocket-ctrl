@@ -1,7 +1,7 @@
-#include "app_bme680.h"
+#include "app_sensors.h"
 
-void *app_bme680(void *param) {
-	char key;
+void *app_sensors(void *param) {
+	enum JOY_DISCRETE joy;
 	disp.setTextSize(1);//21 characters per line
 	TICK=0;
 	while (1) {
@@ -17,13 +17,16 @@ void *app_bme680(void *param) {
 			disp.setCursor(6, 32+4);
 			sprintf(buffer,"Humid = %.3f%%",BME680.humidity);
 			disp.write(buffer);
+			disp.setCursor(6, 48+4);
+			sprintf(buffer,"Heading = %d",compass.readHeading());
+			disp.write(buffer);
 			disp.display();
 		}
-		key=kbd_read(0);
-		switch (key) {
-			case 'C':
+		joy=joy_read(0);
+		switch (joy) {
+			case L:
 				return NULL;
-			case 'D':
+			case R:
 				return NULL;
 		}
 		TICK++;
@@ -31,3 +34,4 @@ void *app_bme680(void *param) {
 	}
 	return NULL;
 }
+

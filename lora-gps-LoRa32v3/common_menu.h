@@ -2,7 +2,7 @@
 #define common_menu 1.0
 
 #include "resc_display.h"
-#include "resc_keyboard.h"
+#include "resc_joystick.h"
 
 // ----- Menu -----
 struct menuitem_t{

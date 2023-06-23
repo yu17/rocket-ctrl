@@ -2,6 +2,7 @@
 #define resc_keyboard 1.0
 
 #include <Arduino.h>
+#include "resc_display.h"
 
 // ----- PRGSW/Keyboard -----
 #define PRGSW_PIN 0
@@ -14,5 +15,6 @@ extern const char KBD_GRID[4][4];
 extern char c;
 
 char kbd_read(uint8_t pollint);
+void kbd_init();
 
 #endif

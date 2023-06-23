@@ -23,6 +23,7 @@ struct packet_frame_t pk_frame;
 struct packet_time_t pk_time;
 struct packet_cord_t pk_cord;
 struct packet_motn_t pk_motn;
+struct packet_stat_t pk_stat;
 struct packet_accr_t pk_accr;
 struct packet_pose_t pk_pose;
 struct packet_ctrl_t pk_ctrl;
@@ -39,7 +40,7 @@ void func_shipctrl_rx(void *param) {
 		PacketRSSI=LoRa.readPacketRSSI();
 		PacketSNR=LoRa.readPacketSNR();
 		PacketID=pk_probe.pid;
-		if (PacketLen && pk_probe.magicnum==LORAGPS_MAG_HEAD) {
+		if (PacketLen && pk_probe.magicnum==LORAGPS_HHLD_HEAD) {
 			switch (pk_probe.sig) {
 				case LORAGPS_CTRL_POWR_OFF:
 					digitalWrite(Vext,HIGH);
@@ -92,7 +93,9 @@ void func_shipinfo_update() {
 	pk_motn.course=GPS.course.value();
 	pk_motn.compass=compass.readHeading();
 
-	pk_motn.bat=batvolt_value;
+	pk_stat.vbat=batvolt_value;
+	pk_stat.HDOP=GPS.hdop.hdop();
+	pk_stat.SAT=GPS.satellites.value();
 
 //	gyro.read();
 //	pk_accr.acc_x=gyro.getAccelX();
@@ -112,7 +115,7 @@ void func_shipinfo_update() {
 }
 
 void func_shipinfo_broadcast_daemon(void* param) {
-	pk_frame.magicnum=LORAGPS_MAG_HEAD;
+	pk_frame.magicnum=LORAGPS_TRCK_HEAD;
 	pk_frame.cid=LORAGPS_CLIENTID;
 	pk_frame.pid=0;
 	while (1) {
@@ -134,6 +137,12 @@ void func_shipinfo_broadcast_daemon(void* param) {
 		pk_frame.pid++;
 		memcpy(pk_frame.fields,&pk_motn,sizeof(struct packet_motn_t));
 		LoRa.transmit((uint8_t *)&pk_frame,packet_header_size+sizeof(struct packet_motn_t),0,LoRa_TXpower,WAIT_TX);
+		delay(100);
+
+		pk_frame.sig=LORAGPS_INFO_STAT;
+		pk_frame.pid++;
+		memcpy(pk_frame.fields,&pk_stat,sizeof(struct packet_stat_t));
+		LoRa.transmit((uint8_t *)&pk_frame,packet_header_size+sizeof(struct packet_stat_t),0,LoRa_TXpower,WAIT_TX);
 		delay(100);
 
 		//pk_frame.sig=LORAGPS_INFO_ACCR;

@@ -1,7 +1,7 @@
 #include "app_gps.h"
 
 void *app_gps(void *param) {
-	char key;
+	enum JOY_DISCRETE joy;
 	disp.setTextSize(1);//21 characters per line
 	TICK=0;
 	while (1) {
@@ -41,11 +41,11 @@ void *app_gps(void *param) {
 			disp.write(buffer);
 			disp.display();
 		}
-		key=kbd_read(0);
-		switch (key) {
-			case 'C':
+		joy=joy_read(0);
+		switch (joy) {
+			case L:
 				return NULL;
-			case 'D':
+			case R:
 				return NULL;
 		}
 		TICK++;

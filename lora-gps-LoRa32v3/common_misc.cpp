@@ -1,12 +1,10 @@
 #include "common_misc.h"
 
+TwoWire I2C2=TwoWire(1);
+
 uint8_t TICK;
 char buffer[BUFFER_SIZE];
 uint8_t buffer_pt;
-
-// ----- BME680 -----
-TwoWire I2C_BME680=TwoWire(1);
-Adafruit_BME680 BME680(&I2C_BME680);
 
 // ----- Battery Voltage -----
 TaskHandle_t Task_batvolt;
@@ -25,7 +23,7 @@ void func_batvolt_update(void *param) {
 
 void *func_setbrightness(void *param) {
 	disp.setTextSize(1);
-	char key;
+	enum JOY_DISCRETE joy;
 	uint8_t brightness_cache=disp_brightness;
 	while (1) {
 		disp.clearDisplay();
@@ -38,25 +36,25 @@ void *func_setbrightness(void *param) {
 		sprintf(buffer,"%d%%",brightness_cache*4/10);
 		disp.write(buffer);
 		disp.display();
-		key=kbd_read(4);
-		switch (key) {
-			case 'A':
+		joy=joy_read(4);
+		switch (joy) {
+			case U:
 				if (brightness_cache<250) {
 					brightness_cache+=10;
 					disp_setbrightness(brightness_cache);
 				}
 				break;
-			case 'B':
+			case D:
 				if (brightness_cache>0) {
 					brightness_cache-=10;
 					disp_setbrightness(brightness_cache);
 				}
 				break;
-			case 'C':
+			case L:
 				disp_setbrightness(disp_brightness);
 				return NULL;
 				break;
-			case 'D':
+			case R:
 				disp_brightness=brightness_cache;
 				return NULL;
 				break;

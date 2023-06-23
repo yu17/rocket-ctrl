@@ -43,3 +43,13 @@ char kbd_read(uint8_t pollint) {
 	}
 	return key;
 }
+
+void kbd_init() {
+	for (uint8_t i=0;i<4;i++) {
+		pinMode(KBD_ROW[i],OUTPUT);
+		digitalWrite(KBD_ROW[i],HIGH);
+		pinMode(KBD_COL[i],INPUT_PULLUP);
+	}
+	disp.write(">>> Keyboard inited\n");
+	disp.display();
+}
