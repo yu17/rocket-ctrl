@@ -13,7 +13,7 @@ void disp_init() {
 	disp_flag_on=1;
 	// text output initialization routine
 	disp.setTextSize(1);
-	disp.setTextColor(SSD1306_WHITE);
+	disp.setTextColor(SSD1306_INVERSE);
 	disp.setCursor(0, 0);
 	disp.cp437(true);
 	disp.write(">>> Display inited\n");

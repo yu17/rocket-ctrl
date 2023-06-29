@@ -299,10 +299,65 @@ void func_tracker_shipinfo(struct ship_data_t *ship) {
 	bool runflag=1;
 	uint8_t page=0;
 	enum JOY_DISCRETE joy;
+	int heading_ccw;
 	while (runflag) {
 		disp.clearDisplay();
 		disp.setTextSize(1);
 		if (page==0) {
+			//disp.setCursor(6, 0);
+			//sprintf(buffer,"%04d-%02d-%02d %02d:%02d:%02d",GPS.date.year(),GPS.date.month(),GPS.date.day(),GPS.time.hour(),GPS.time.minute(),GPS.time.second());
+			//disp.write(buffer);
+			disp.setCursor(0, 0);
+			sprintf(buffer,"%02d:%02d:%02d",GPS.time.hour(),GPS.time.minute(),GPS.time.second());
+			disp.write(buffer);
+			disp.setCursor(6*15, 0);
+			sprintf(buffer,"%.3fV",ship->ship_stat.vbat);
+			disp.write(buffer);
+			disp.setCursor(0, 8);
+			sprintf(buffer,"%9.6f%c",abs(ship->ship_cord.latitude),ship->ship_cord.latitude<0?'S':'N');
+			disp.write(buffer);
+			disp.setCursor(6*11, 8);
+			if (abs(GPS.location.lng())>=100) sprintf(buffer,"%9.5f%c",abs(ship->ship_cord.longitude),ship->ship_cord.longitude<0?'W':'E');
+			else sprintf(buffer,"%9.6f%c",abs(ship->ship_cord.longitude),ship->ship_cord.longitude<0?'W':'E');
+			disp.write(buffer);
+			disp.setCursor(6*2, 16);
+			sprintf(buffer,"%.1fm/s",ship->ship_motn.speed);
+			disp.write(buffer);
+			disp.setCursor(6*9, 16);
+			sprintf(buffer,"(%.1fkm/h)",ship->ship_motn.speed*3.6);
+			disp.write(buffer);
+			disp.setCursor(0, 24);
+			sprintf(buffer,"%.2f%c",ship->ship_motn.course/100.0,248);
+			disp.write(buffer);
+			disp.setCursor(6*9, 24);
+			sprintf(buffer,"%s",GPS.cardinal(ship->ship_motn.course/100.0));
+			disp.write(buffer);
+			disp.setCursor(6*13, 24);
+			sprintf(buffer,"%.2fm",ship->ship_cord.altitude);
+			disp.write(buffer);
+			disp.setCursor(0, 32);
+			sprintf(buffer,"CORS: %.2f%c",GPS.courseTo(GPS.location.lat(),GPS.location.lng(),ship->ship_cord.latitude,ship->ship_cord.longitude),248);
+			disp.write(buffer);
+			disp.setCursor(6*15, 32);
+			sprintf(buffer,"%s",GPS.cardinal(GPS.courseTo(GPS.location.lat(),GPS.location.lng(),ship->ship_cord.latitude,ship->ship_cord.longitude)));
+			disp.write(buffer);
+			disp.setCursor(0, 40);
+			sprintf(buffer,"DIST: %.1f",GPS.distanceBetween(GPS.location.lat(),GPS.location.lng(),ship->ship_cord.latitude,ship->ship_cord.longitude));
+			disp.write(buffer);
+			disp.setCursor(0, 48);
+			sprintf(buffer,"SAT: %d",ship->ship_stat.SAT);
+			disp.write(buffer);
+			disp.setCursor(6*11, 48);
+			sprintf(buffer,"HDOP: %.*f",ship->ship_stat.HDOP>99?0:ship->ship_stat.HDOP>9?1:2,ship->ship_stat.HDOP);
+			disp.write(buffer);
+			disp.setCursor(0, 56);
+			sprintf(buffer,"COMP: %d",ship->ship_motn.compass);
+			disp.write(buffer);
+			disp.setCursor(6*11, 56);
+			sprintf(buffer,"PKT: %d",PacketID);
+			disp.write(buffer);
+		}
+		else if (page==1) {
 			//disp.setCursor(6, 0);
 			//sprintf(buffer,"%04d-%02d-%02d %02d:%02d:%02d",GPS.date.year(),GPS.date.month(),GPS.date.day(),GPS.time.hour(),GPS.time.minute(),GPS.time.second());
 			//disp.write(buffer);
@@ -355,6 +410,36 @@ void func_tracker_shipinfo(struct ship_data_t *ship) {
 			disp.setCursor(6*11, 56);
 			sprintf(buffer,"PKT: %d",PacketID);
 			disp.write(buffer);
+		}
+		else if (page==2) {
+			heading_ccw=(compass.readHeading()+compass_offset)%360;
+			disp.setCursor(0, 0);
+			sprintf(buffer,"%02d:%02d:%02d",GPS.time.hour(),GPS.time.minute(),GPS.time.second());
+			disp.write(buffer);
+			disp.setCursor(0, 8);
+			sprintf(buffer,"%9.6f%c",abs(ship->ship_cord.latitude),ship->ship_cord.latitude<0?'S':'N');
+			disp.write(buffer);
+			disp.setCursor(0, 16);
+			if (abs(GPS.location.lng())>=100) sprintf(buffer,"%9.5f%c",abs(ship->ship_cord.longitude),ship->ship_cord.longitude<0?'W':'E');
+			else sprintf(buffer,"%9.6f%c",abs(ship->ship_cord.longitude),ship->ship_cord.longitude<0?'W':'E');
+			disp.write(buffer);
+			disp.setCursor(0, 24);
+			sprintf(buffer,"%.2fm",ship->ship_cord.altitude);
+			disp.write(buffer);
+			disp.setCursor(0, 32);
+			sprintf(buffer,"%.2f%c",GPS.courseTo(GPS.location.lat(),GPS.location.lng(),ship->ship_cord.latitude,ship->ship_cord.longitude),248);
+			disp.write(buffer);
+			disp.setCursor(0, 40);
+			sprintf(buffer,"DIST: %.1f",GPS.distanceBetween(GPS.location.lat(),GPS.location.lng(),ship->ship_cord.latitude,ship->ship_cord.longitude));
+			disp.write(buffer);
+			disp.setCursor(0, 48);
+			sprintf(buffer,"RSSI: %d",PacketRSSI);
+			disp.write(buffer);
+			disp.setCursor(0, 56);
+			sprintf(buffer,"PKT: %d",PacketID);
+			disp.write(buffer);
+			compass_draw_graph(96,32,30,heading_ccw);
+			compass_draw_arrow(96,32,18,heading_ccw-compass_course_clkflip(GPS.courseTo(GPS.location.lat(),GPS.location.lng(),ship->ship_cord.latitude,ship->ship_cord.longitude)));
 		}
 //		else if (page==1) {
 //			disp.setCursor(6, 0);
@@ -413,7 +498,7 @@ void func_tracker_shipinfo(struct ship_data_t *ship) {
 				if (page>0) page--;
 				break;
 			case D:
-				if (page<1) page++;
+				if (page<2) page++;
 				break;
 			case L:
 				runflag=0;

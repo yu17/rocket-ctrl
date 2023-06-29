@@ -22,6 +22,9 @@
 #define LORA_DEVICE DEVICE_SX1262               //we need to define the device we are using
 
 void setup() {
+	// Power on Vext
+	pinMode(Vext,OUTPUT);
+	digitalWrite(Vext,LOW);
 	TICK=0;
 	Serial.begin(115200);
 	// OLED -- initialization
@@ -64,6 +67,10 @@ void setup() {
 	delay(500);
 	disp.clearDisplay();
 	disp.display();
+	Serial.println(menu_numinput(3,1,1234,NULL));
+	Serial.println(menu_numinput(4,3,1234,NULL));
+	Serial.println(menu_numinput(5,4,1234,NULL));
+	sleep(1000);
 }
 
 void loop() {

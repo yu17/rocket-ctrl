@@ -39,22 +39,23 @@ void *func_setbrightness(void *param) {
 		joy=joy_read(4);
 		switch (joy) {
 			case U:
-				if (brightness_cache<250) {
-					brightness_cache+=10;
-					disp_setbrightness(brightness_cache);
-				}
-				break;
 			case D:
+				disp_setbrightness(disp_brightness);
+				return NULL;
+				break;
+			case L:
 				if (brightness_cache>0) {
 					brightness_cache-=10;
 					disp_setbrightness(brightness_cache);
 				}
 				break;
-			case L:
-				disp_setbrightness(disp_brightness);
-				return NULL;
-				break;
 			case R:
+				if (brightness_cache<250) {
+					brightness_cache+=10;
+					disp_setbrightness(brightness_cache);
+				}
+				break;
+			case B:
 				disp_brightness=brightness_cache;
 				return NULL;
 				break;

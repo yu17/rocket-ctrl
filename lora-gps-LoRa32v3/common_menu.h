@@ -21,4 +21,6 @@ void menu_destroy(struct menuitem_t *item);
 
 uint8_t menu_exec(struct menuitem_t* (*menu_loader)(uint8_t[]));
 
+int menu_numinput(uint8_t digits_integer, uint8_t digits_decimal, int defval, char* unit);
+
 #endif

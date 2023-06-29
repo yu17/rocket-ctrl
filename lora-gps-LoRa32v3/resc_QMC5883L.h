@@ -1,6 +1,8 @@
 #ifndef resc_QMC5883L
 #define resc_QMC5883L 1.0
 
+#include <math.h>
+
 #include <Arduino.h>
 #include <Wire.h>
 
@@ -57,32 +59,40 @@
 
 class QMC5883L {
 public:
-  void init();
-  void reset();
-  int  ready();
-  void reconfig();
-  
-  int readHeading();
-  int readRaw( int16_t *x, int16_t *y, int16_t *z, int16_t *t );
+	void init();
+	void reset();
+	int  ready();
+	void reconfig();
+	
+	int readHeading();
+	int readRaw( int16_t *x, int16_t *y, int16_t *z, int16_t *t );
 
-  void resetCalibration();
+	void resetCalibration();
 
-  void setSamplingRate( int rate );
-  void setRange( int range );
-  void setOversampling( int ovl );
-  
+	void setSamplingRate( int rate );
+	void setRange( int range );
+	void setOversampling( int ovl );
+	
 private:
-  int16_t xhigh, xlow;
-  int16_t yhigh, ylow;
-  uint8_t addr;
-  uint8_t mode;
-  uint8_t rate;
-  uint8_t range;
-  uint8_t oversampling;
+	int16_t xhigh, xlow;
+	int16_t yhigh, ylow;
+	uint8_t addr;
+	uint8_t mode;
+	uint8_t rate;
+	uint8_t range;
+	uint8_t oversampling;
 };
 
 extern QMC5883L compass;
 
+extern int compass_offset;
+
+static inline int compass_course_clkflip(int course) {return (360-course)%360;}
+
 void compass_init();
+
+void compass_draw_graph(uint8_t center_x, uint8_t center_y, uint8_t radius, int course_ccw);
+
+void compass_draw_arrow(uint8_t center_x, uint8_t center_y, uint8_t radius, int course_ccw);
 
 #endif
