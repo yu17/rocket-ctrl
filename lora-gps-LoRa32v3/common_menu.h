@@ -19,8 +19,8 @@ void menu_render(struct menuitem_t *item, uint8_t pos, uint8_t scale);
 
 void menu_destroy(struct menuitem_t *item);
 
-uint8_t menu_exec(struct menuitem_t* (*menu_loader)(uint8_t[]));
+uint8_t menu_exec(struct menuitem_t* (*menu_loader)(uint8_t[]), uint8_t* (*menu_marking)(uint8_t[]));
 
-int menu_numinput(uint8_t digits_integer, uint8_t digits_decimal, int defval, char* unit);
+int menu_numinput(uint8_t digits_integer, uint8_t digits_decimal, int defval, const char* unit);
 
 #endif

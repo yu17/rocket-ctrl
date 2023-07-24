@@ -2,7 +2,7 @@
 
 #define SYMB_TICK_W 12
 #define SYMB_TICK_H 16
-static const unsigned char PROGMEM SYMB_TICK[] = {
+static const unsigned char SYMB_TICK[] = {
 	B00000000, B00000000,
 	B00000000, B00010000,
 	B00000000, B00110000,
@@ -22,7 +22,7 @@ static const unsigned char PROGMEM SYMB_TICK[] = {
 
 #define SYMB_UPTRG_W 12
 #define SYMB_UPTRG_H 6
-static const unsigned char PROGMEM SYMB_UPTRG[] = {
+static const unsigned char SYMB_UPTRG[] = {
 	B00000110, B00000000,
 	B00001111, B00000000,
 	B00011111, B10000000,
@@ -32,7 +32,7 @@ static const unsigned char PROGMEM SYMB_UPTRG[] = {
 
 #define SYMB_DOWNTRG_W 12
 #define SYMB_DOWNTRG_H 6
-static const unsigned char PROGMEM SYMB_DOWNTRG[] = {
+static const unsigned char SYMB_DOWNTRG[] = {
 	B11111111, B11110000,
 	B01111111, B11100000,
 	B00111111, B11000000,
@@ -92,12 +92,13 @@ void menu_destroy(struct menuitem_t *item) {
 	free(item);
 }
 
-uint8_t menu_exec(struct menuitem_t* (*menu_loader)(uint8_t[])) {
+uint8_t menu_exec(struct menuitem_t* (*menu_loader)(uint8_t[]), uint8_t* (*menu_marking)(uint8_t[])) {
 	uint8_t menu_stack[10];
 	memset(&menu_stack,0,10*sizeof(uint8_t));
 	uint8_t stackpt=0;
 	uint8_t pos=0;
 	struct menuitem_t *item=menu_loader(menu_stack);
+	//uint8_t *
 	void* (*enter)(void*)=NULL;
 	void* param=NULL;
 	enum JOY_DISCRETE joy;
@@ -161,7 +162,7 @@ uint8_t menu_exec(struct menuitem_t* (*menu_loader)(uint8_t[])) {
 	return 0;
 }
 
-int menu_numinput(uint8_t digits_integer, uint8_t digits_decimal, int defval, char* unit) {
+int menu_numinput(uint8_t digits_integer, uint8_t digits_decimal, int defval, const char* unit) {
 	// Return the selected value as an integer! Make sure to apply the deciaml point.
 	enum JOY_DISCRETE joy;
 	uint8_t total_digit=digits_integer+digits_decimal;
@@ -173,7 +174,7 @@ int menu_numinput(uint8_t digits_integer, uint8_t digits_decimal, int defval, ch
 		digits[--current_digit]=defval%10;
 		defval/=10;
 	}
-	uint8_t cord_xsum=total_digit*(12+hspace)+6*(digits_decimal>0)+12;
+	uint8_t cord_xsum=total_digit*(12+hspace)+6*(digits_decimal>0)+12+hspace;
 	while (1) {
 		disp.clearDisplay();
 		disp.setTextSize(2);
@@ -192,6 +193,11 @@ int menu_numinput(uint8_t digits_integer, uint8_t digits_decimal, int defval, ch
 			}
 		}
 		disp.drawBitmap((128+cord_xsum)/2-12,64/2-16/2,SYMB_TICK,SYMB_TICK_W,SYMB_TICK_H,SSD1306_INVERSE);
+		if (unit) {
+			disp.setTextSize(1);
+			disp.setCursor((128+cord_xsum)/2-12-hspace-6*strlen(unit),64/2+16/2+16);
+			disp.print(unit);
+		}
 
 		// draw arrows
 		if (current_digit<digits_integer) {

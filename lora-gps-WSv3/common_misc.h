@@ -4,6 +4,7 @@
 #include <Arduino.h>
 
 #define PRGSW_PIN 0
+#define PIN_IGN 45
 #define BUFFER_SIZE 128
 
 extern bool PRGSW_def,PRGSW_act;

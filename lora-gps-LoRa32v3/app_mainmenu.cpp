@@ -78,9 +78,9 @@ struct menuitem_t *mainmenu_load(uint8_t levels[]) {
 			item=item->next;
 			item->id=3;
 			item->desc="LoRa";
-			item->enter_behavior=0;
+			item->enter_behavior=1;
 			item->drop_menu=0;
-			item->enter=NULL;
+			item->enter=&loraconf_enter;
 			item->param=NULL;
 			//4-4-Sleep
 			item->next=(struct menuitem_t*)malloc(sizeof(struct menuitem_t));
@@ -139,7 +139,7 @@ struct menuitem_t *mainmenu_load(uint8_t levels[]) {
 				item->drop_menu=0;
 				item->enter=&func_quick_settings;
 				item->param=malloc(sizeof(uint8_t));
-				*((int*)(item->param))=SYS_VOLT_1;
+				*((uint8_t*)(item->param))=SYS_VOLT_1;
 				item->prev=NULL;
 				//4-1-2-2-Background Voltage Update Disabled
 				item->next=(struct menuitem_t*)malloc(sizeof(struct menuitem_t));
@@ -151,7 +151,7 @@ struct menuitem_t *mainmenu_load(uint8_t levels[]) {
 				item->drop_menu=0;
 				item->enter=&func_quick_settings;
 				item->param=malloc(sizeof(uint8_t));
-				*((int*)(item->param))=SYS_VOLT_2;
+				*((uint8_t*)(item->param))=SYS_VOLT_2;
 				item->next=NULL;
 			}
 			else if (levels[2]==3) {
@@ -164,7 +164,7 @@ struct menuitem_t *mainmenu_load(uint8_t levels[]) {
 				item->drop_menu=0;
 				item->enter=&func_quick_settings;
 				item->param=malloc(sizeof(uint8_t));
-				*((int*)(item->param))=SYS_TEMP_1;
+				*((uint8_t*)(item->param))=SYS_TEMP_1;
 				item->prev=NULL;
 				//4-1-3-2-Background Chip Temperature Update Disabled
 				item->next=(struct menuitem_t*)malloc(sizeof(struct menuitem_t));
@@ -176,7 +176,7 @@ struct menuitem_t *mainmenu_load(uint8_t levels[]) {
 				item->drop_menu=0;
 				item->enter=&func_quick_settings;
 				item->param=malloc(sizeof(uint8_t));
-				*((int*)(item->param))=SYS_TEMP_2;
+				*((uint8_t*)(item->param))=SYS_TEMP_2;
 				item->next=NULL;
 			}
 		}
@@ -225,7 +225,7 @@ struct menuitem_t *mainmenu_load(uint8_t levels[]) {
 				item->drop_menu=0;
 				item->enter=&func_quick_settings;
 				item->param=malloc(sizeof(uint8_t));
-				*((int*)(item->param))=SYS_GPS_1_1;
+				*((uint8_t*)(item->param))=SYS_GPS_1_1;
 				item->prev=NULL;
 				//4-2-1-2-GPS Power Off
 				item->next=(struct menuitem_t*)malloc(sizeof(struct menuitem_t));
@@ -237,7 +237,7 @@ struct menuitem_t *mainmenu_load(uint8_t levels[]) {
 				item->drop_menu=0;
 				item->enter=&func_quick_settings;
 				item->param=malloc(sizeof(uint8_t));
-				*((int*)(item->param))=SYS_GPS_1_2;
+				*((uint8_t*)(item->param))=SYS_GPS_1_2;
 				item->next=NULL;
 			}
 			else if (levels[2]==2) {
@@ -250,7 +250,7 @@ struct menuitem_t *mainmenu_load(uint8_t levels[]) {
 				item->drop_menu=0;
 				item->enter=&func_quick_settings;
 				item->param=malloc(sizeof(uint8_t));
-				*((int*)(item->param))=SYS_GPS_2_1;
+				*((uint8_t*)(item->param))=SYS_GPS_2_1;
 				item->prev=NULL;
 				//4-2-2-2-GPS Background Update Disabled
 				item->next=(struct menuitem_t*)malloc(sizeof(struct menuitem_t));
@@ -262,7 +262,7 @@ struct menuitem_t *mainmenu_load(uint8_t levels[]) {
 				item->drop_menu=0;
 				item->enter=&func_quick_settings;
 				item->param=malloc(sizeof(uint8_t));
-				*((int*)(item->param))=SYS_GPS_2_2;
+				*((uint8_t*)(item->param))=SYS_GPS_2_2;
 				item->next=NULL;
 			}
 			else if (levels[2]==3) {
@@ -275,7 +275,7 @@ struct menuitem_t *mainmenu_load(uint8_t levels[]) {
 				item->drop_menu=0;
 				item->enter=&func_quick_settings;
 				item->param=malloc(sizeof(uint8_t));
-				*((int*)(item->param))=SYS_GPS_3_1;
+				*((uint8_t*)(item->param))=SYS_GPS_3_1;
 				item->prev=NULL;
 				//4-2-3-2-GPS Freq 1Hz
 				item->next=(struct menuitem_t*)malloc(sizeof(struct menuitem_t));
@@ -287,7 +287,7 @@ struct menuitem_t *mainmenu_load(uint8_t levels[]) {
 				item->drop_menu=0;
 				item->enter=&func_quick_settings;
 				item->param=malloc(sizeof(uint8_t));
-				*((int*)(item->param))=SYS_GPS_3_2;
+				*((uint8_t*)(item->param))=SYS_GPS_3_2;
 				//4-2-3-3-GPS Freq 2Hz
 				item->next=(struct menuitem_t*)malloc(sizeof(struct menuitem_t));
 				item->next->prev=item;
@@ -298,7 +298,7 @@ struct menuitem_t *mainmenu_load(uint8_t levels[]) {
 				item->drop_menu=0;
 				item->enter=&func_quick_settings;
 				item->param=malloc(sizeof(uint8_t));
-				*((int*)(item->param))=SYS_GPS_3_3;
+				*((uint8_t*)(item->param))=SYS_GPS_3_3;
 				//4-2-3-4-GPS Freq 5Hz
 				item->next=(struct menuitem_t*)malloc(sizeof(struct menuitem_t));
 				item->next->prev=item;
@@ -309,7 +309,7 @@ struct menuitem_t *mainmenu_load(uint8_t levels[]) {
 				item->drop_menu=0;
 				item->enter=&func_quick_settings;
 				item->param=malloc(sizeof(uint8_t));
-				*((int*)(item->param))=SYS_GPS_3_4;
+				*((uint8_t*)(item->param))=SYS_GPS_3_4;
 				item->next=NULL;
 			}
 		}

@@ -67,17 +67,13 @@ void setup() {
 	delay(500);
 	disp.clearDisplay();
 	disp.display();
-	Serial.println(menu_numinput(3,1,1234,NULL));
-	Serial.println(menu_numinput(4,3,1234,NULL));
-	Serial.println(menu_numinput(5,4,1234,NULL));
-	sleep(1000);
 }
 
 void loop() {
 	c=joy_read(0);
 	if (c==P) disp_switch();
 	if (c==R && disp_flag_on) {
-		menu_exec(mainmenu_load);
+		menu_exec(mainmenu_load,NULL);
 		TICK=0;
 	}
 	if (!TICK%10) {

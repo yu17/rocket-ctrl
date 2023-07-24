@@ -32,4 +32,12 @@ extern uint8_t PacketLen;
 extern uint8_t PacketID;
 extern uint8_t *PacketBuffer[255];
 
+void* loraconf_enter(void *param);
+
+struct menuitem_t *loraconf_menu(uint8_t levels[]);
+
+uint8_t *loraconf_menumark(uint8_t levels[]);
+
+void* loraconf_config(void* param);
+
 #endif

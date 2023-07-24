@@ -33,6 +33,15 @@ TaskHandle_t Task_Broadcast;
 
 bool broadcast_bg_runflag=0;
 
+void func_shipctrl_launchseq() {
+	delay(500);
+	digitalWrite(LED,HIGH);
+	digitalWrite(PIN_IGN,HIGH);
+	delay(100);
+	digitalWrite(PIN_IGN,LOW);
+	digitalWrite(LED,LOW);
+}
+
 void func_shipctrl_rx(void *param) {
 	struct packet_frame_t pk_probe;
 	while (1) {
@@ -76,6 +85,9 @@ void func_shipctrl_rx(void *param) {
 					break;
 				case LORAGPS_CTRL_DISP_OFF:
 					disp_pwroff();
+					break;
+				case LORAGPS_CTRL_IGNITION:
+					func_shipctrl_launchseq();
 					break;
 			}
 		}

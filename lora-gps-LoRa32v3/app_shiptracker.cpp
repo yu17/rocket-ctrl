@@ -47,11 +47,21 @@ struct menuitem_t *shipctrl_menu(uint8_t levels[]) {
 		item->drop_menu=0;
 		item->enter=NULL;
 		item->param=NULL;
-		//5-Power Off
+		//5-Ignition
 		item->next=(struct menuitem_t*)malloc(sizeof(struct menuitem_t));
 		item->next->prev=item;
 		item=item->next;
 		item->id=5;
+		item->desc="Ignition";
+		item->enter_behavior=0;
+		item->drop_menu=0;
+		item->enter=NULL;
+		item->param=NULL;
+		//6-Power Off
+		item->next=(struct menuitem_t*)malloc(sizeof(struct menuitem_t));
+		item->next->prev=item;
+		item=item->next;
+		item->id=6;
 		item->desc="Power Off";
 		item->enter_behavior=0;
 		item->drop_menu=0;
@@ -69,7 +79,7 @@ struct menuitem_t *shipctrl_menu(uint8_t levels[]) {
 		item->enter_behavior=2;
 		item->drop_menu=0;
 		item->enter=&func_tracker_shipctrl_sendcommand;
-		item->param=item->param=malloc(sizeof(uint8_t)+sizeof(struct packet_ctrl_t));
+		item->param=malloc(sizeof(uint8_t)+sizeof(struct packet_ctrl_t));
 		((uint8_t*)(item->param))[0]=LORAGPS_CTRL_LED_ON;
 		item->prev=NULL;
 		//1-2-LED Off
@@ -81,7 +91,7 @@ struct menuitem_t *shipctrl_menu(uint8_t levels[]) {
 		item->enter_behavior=2;
 		item->drop_menu=0;
 		item->enter=&func_tracker_shipctrl_sendcommand;
-		item->param=item->param=malloc(sizeof(uint8_t)+sizeof(struct packet_ctrl_t));
+		item->param=malloc(sizeof(uint8_t)+sizeof(struct packet_ctrl_t));
 		((uint8_t*)(item->param))[0]=LORAGPS_CTRL_LED_OFF;
 		//1-3-LED Flash
 		item->next=(struct menuitem_t*)malloc(sizeof(struct menuitem_t));
@@ -92,7 +102,7 @@ struct menuitem_t *shipctrl_menu(uint8_t levels[]) {
 		item->enter_behavior=2;
 		item->drop_menu=0;
 		item->enter=&func_tracker_shipctrl_sendcommand;
-		item->param=item->param=malloc(sizeof(uint8_t)+sizeof(struct packet_ctrl_t));
+		item->param=malloc(sizeof(uint8_t)+sizeof(struct packet_ctrl_t));
 		((uint8_t*)(item->param))[0]=LORAGPS_CTRL_LED_FLASH;
 		//1-4-LED Flash on Receiving Hearbeat Packet
 		item->next=(struct menuitem_t*)malloc(sizeof(struct menuitem_t));
@@ -103,7 +113,7 @@ struct menuitem_t *shipctrl_menu(uint8_t levels[]) {
 		item->enter_behavior=2;
 		item->drop_menu=0;
 		item->enter=&func_tracker_shipctrl_sendcommand;
-		item->param=item->param=malloc(sizeof(uint8_t)+sizeof(struct packet_ctrl_t));
+		item->param=malloc(sizeof(uint8_t)+sizeof(struct packet_ctrl_t));
 		((uint8_t*)(item->param))[0]=LORAGPS_CTRL_LED_HEARTBEAT;
 		item->next=NULL;
 	}
@@ -118,7 +128,7 @@ struct menuitem_t *shipctrl_menu(uint8_t levels[]) {
 			item->enter_behavior=2;
 			item->drop_menu=0;
 			item->enter=&func_tracker_shipctrl_sendcommand;
-			item->param=item->param=malloc(sizeof(uint8_t)+sizeof(struct packet_ctrl_t));
+			item->param=malloc(sizeof(uint8_t)+sizeof(struct packet_ctrl_t));
 			((uint8_t*)(item->param))[0]=LORAGPS_CTRL_GPSD_ON;
 			item->prev=NULL;
 			//2-2-GPS Off
@@ -130,7 +140,7 @@ struct menuitem_t *shipctrl_menu(uint8_t levels[]) {
 			item->enter_behavior=2;
 			item->drop_menu=0;
 			item->enter=&func_tracker_shipctrl_sendcommand;
-			item->param=item->param=malloc(sizeof(uint8_t)+sizeof(struct packet_ctrl_t));
+			item->param=malloc(sizeof(uint8_t)+sizeof(struct packet_ctrl_t));
 			((uint8_t*)(item->param))[0]=LORAGPS_CTRL_GPSD_OFF;
 			//2-3-Set GPS frequency
 			item->next=(struct menuitem_t*)malloc(sizeof(struct menuitem_t));
@@ -156,7 +166,7 @@ struct menuitem_t *shipctrl_menu(uint8_t levels[]) {
 			item->enter_behavior=2;
 			item->drop_menu=0;
 			item->enter=&func_tracker_shipctrl_sendcommand;
-			item->param=item->param=malloc(sizeof(uint8_t)+sizeof(struct packet_ctrl_t));
+			item->param=malloc(sizeof(uint8_t)+sizeof(struct packet_ctrl_t));
 			((uint8_t*)(item->param))[0]=LORAGPS_CTRL_LORA_ON;
 			item->prev=NULL;
 			//3-2-Turn off broadcasting
@@ -168,7 +178,7 @@ struct menuitem_t *shipctrl_menu(uint8_t levels[]) {
 			item->enter_behavior=2;
 			item->drop_menu=0;
 			item->enter=&func_tracker_shipctrl_sendcommand;
-			item->param=item->param=malloc(sizeof(uint8_t)+sizeof(struct packet_ctrl_t));
+			item->param=malloc(sizeof(uint8_t)+sizeof(struct packet_ctrl_t));
 			((uint8_t*)(item->param))[0]=LORAGPS_CTRL_LORA_OFF;
 			//3-3-Set broadcast interval
 			item->next=(struct menuitem_t*)malloc(sizeof(struct menuitem_t));
@@ -194,7 +204,7 @@ struct menuitem_t *shipctrl_menu(uint8_t levels[]) {
 			item->enter_behavior=2;
 			item->drop_menu=0;
 			item->enter=&func_tracker_shipctrl_sendcommand;
-			item->param=item->param=malloc(sizeof(uint8_t)+sizeof(struct packet_ctrl_t));
+			item->param=malloc(sizeof(uint8_t)+sizeof(struct packet_ctrl_t));
 			((uint8_t*)(item->param))[0]=LORAGPS_CTRL_DISP_ON;
 			item->prev=NULL;
 			//4-2-Display Off
@@ -206,7 +216,7 @@ struct menuitem_t *shipctrl_menu(uint8_t levels[]) {
 			item->enter_behavior=2;
 			item->drop_menu=0;
 			item->enter=&func_tracker_shipctrl_sendcommand;
-			item->param=item->param=malloc(sizeof(uint8_t)+sizeof(struct packet_ctrl_t));
+			item->param=malloc(sizeof(uint8_t)+sizeof(struct packet_ctrl_t));
 			((uint8_t*)(item->param))[0]=LORAGPS_CTRL_DISP_OFF;
 			//4-3-Display Content
 			item->next=(struct menuitem_t*)malloc(sizeof(struct menuitem_t));
@@ -222,16 +232,31 @@ struct menuitem_t *shipctrl_menu(uint8_t levels[]) {
 		}
 	}
 	else if (levels[0]==5) {
-		// 5-Power Off
+		// 5-Ignition
 		menu=(struct menuitem_t*)malloc(sizeof(struct menuitem_t));
-			//5-1-Power Off Whole System
+			//5-1-Start Ignition Sequence
 			struct menuitem_t *item=menu;
 			item->id=1;
 			item->desc="CONFIRM";
 			item->enter_behavior=2;
 			item->drop_menu=0;
 			item->enter=&func_tracker_shipctrl_sendcommand;
-			item->param=item->param=malloc(sizeof(uint8_t)+sizeof(struct packet_ctrl_t));
+			item->param=malloc(sizeof(uint8_t)+sizeof(struct packet_ctrl_t));
+			((uint8_t*)(item->param))[0]=LORAGPS_CTRL_IGNITION;
+			item->prev=NULL;
+			item->next=NULL;
+	}
+	else if (levels[0]==6) {
+		// 6-Power Off
+		menu=(struct menuitem_t*)malloc(sizeof(struct menuitem_t));
+			//6-1-Power Off Whole System
+			struct menuitem_t *item=menu;
+			item->id=1;
+			item->desc="CONFIRM";
+			item->enter_behavior=2;
+			item->drop_menu=0;
+			item->enter=&func_tracker_shipctrl_sendcommand;
+			item->param=malloc(sizeof(uint8_t)+sizeof(struct packet_ctrl_t));
 			((uint8_t*)(item->param))[0]=LORAGPS_CTRL_POWR_OFF;
 			item->prev=NULL;
 			item->next=NULL;
@@ -504,7 +529,7 @@ void func_tracker_shipinfo(struct ship_data_t *ship) {
 				runflag=0;
 				break;
 			case R:
-				menu_exec(&shipctrl_menu);
+				menu_exec(&shipctrl_menu,NULL);
 				break;
 		}
 		delay(TICKINT);

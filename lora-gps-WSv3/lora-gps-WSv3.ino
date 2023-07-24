@@ -19,6 +19,10 @@
 
 void setup() {
 	Serial.begin(115200);
+	// POWEROFF IGNITION
+	pinMode(PIN_IGN,OUTPUT);
+	digitalWrite(PIN_IGN,LOW);
+	// Enable Accessories
 	pinMode(Vext,OUTPUT);
 	digitalWrite(Vext,LOW);
 	vext_powered=1;
