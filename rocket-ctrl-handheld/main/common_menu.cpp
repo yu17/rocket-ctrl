@@ -239,6 +239,8 @@ int menu_numinput(uint8_t digits_integer, uint8_t digits_decimal, int defval, co
 					return defval;
 				}
 				break;
+			default:
+				break;
 		}
 	}
 }

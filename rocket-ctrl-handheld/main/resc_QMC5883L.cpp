@@ -42,6 +42,8 @@ void QMC5883L::setOversampling( int x ) {
 		case 64:
 			oversampling = QMC5883L_CONFIG_OS64;
 			break;
+		default:
+			break;
 	}
 	reconfig();
 }
@@ -53,6 +55,8 @@ void QMC5883L::setRange( int x ) {
 			break;
 		case 8:
 			range = QMC5883L_CONFIG_8GAUSS;
+			break;
+		default:
 			break;
 	}
 	reconfig();
@@ -71,6 +75,8 @@ void QMC5883L::setSamplingRate( int x ) {
 			break;
 		case 200:
 			rate = QMC5883L_CONFIG_200HZ;
+			break;
+		default:
 			break;
 	}
 	reconfig();

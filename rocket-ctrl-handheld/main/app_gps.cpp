@@ -47,6 +47,8 @@ void *app_gps(void *param) {
 				return NULL;
 			case R:
 				return NULL;
+			default:
+				break;
 		}
 		TICK++;
 		delay(TICKINT);

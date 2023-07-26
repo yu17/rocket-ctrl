@@ -21,7 +21,7 @@
 
 #define LORA_DEVICE DEVICE_SX1262               //we need to define the device we are using
 
-void setup() {
+extern "C" void app_main() {
 	// Power on Vext
 	pinMode(Vext,OUTPUT);
 	digitalWrite(Vext,LOW);
@@ -67,29 +67,29 @@ void setup() {
 	delay(500);
 	disp.clearDisplay();
 	disp.display();
-}
 
-void loop() {
-	c=joy_read(0);
-	if (c==P) disp_switch();
-	if (c==R && disp_flag_on) {
-		menu_exec(mainmenu_load,NULL);
-		TICK=0;
-	}
-	if (!TICK%10) {
-		disp.clearDisplay();
-		disp.setTextSize(1);
-		if (batvolt_flag_enabled) {
-			disp.setCursor(2, 2);
-			sprintf(buffer,"%.3fV",batvolt_value);
-			disp.write(buffer);
+	while (1) {
+		c=joy_read(0);
+		if (c==P) disp_switch();
+		if (c==R && disp_flag_on) {
+			menu_exec(mainmenu_load,NULL);
+			TICK=0;
 		}
-		sprintf(buffer,"%02d:%02d:%02d\n",GPS.time.hour(),GPS.time.minute(),GPS.time.second());
-		disp.setTextSize(2);
-		disp.setCursor(12, 24);
-		disp.write(buffer);
-		disp.display();
+		if (!TICK%10) {
+			disp.clearDisplay();
+			disp.setTextSize(1);
+			if (batvolt_flag_enabled) {
+				disp.setCursor(2, 2);
+				sprintf(buffer,"%.3fV",batvolt_value);
+				disp.write(buffer);
+			}
+			sprintf(buffer,"%02d:%02d:%02d\n",GPS.time.hour(),GPS.time.minute(),GPS.time.second());
+			disp.setTextSize(2);
+			disp.setCursor(12, 24);
+			disp.write(buffer);
+			disp.display();
+		}
+		TICK++;
+		delay(TICKINT);
 	}
-	TICK++;
-	delay(TICKINT);
 }

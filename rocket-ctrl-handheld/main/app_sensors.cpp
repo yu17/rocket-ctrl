@@ -62,6 +62,8 @@ void *app_sensors(void *param) {
 				break;
 			case L:
 				return NULL;
+			default:
+				break;
 		}
 		TICK++;
 		delay(TICKINT);

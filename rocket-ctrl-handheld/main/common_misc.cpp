@@ -59,6 +59,8 @@ void *func_setbrightness(void *param) {
 				disp_brightness=brightness_cache;
 				return NULL;
 				break;
+			default:
+				break;
 		}
 	}
 	return NULL;

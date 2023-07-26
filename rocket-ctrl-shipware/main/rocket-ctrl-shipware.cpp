@@ -17,7 +17,7 @@
 //TwoWire I2C_GY521=TwoWire(0);
 //GY521 gyro(0x68, &I2C_GY521);
 
-void setup() {
+extern "C" void app_main() {
 	Serial.begin(115200);
 	// POWEROFF IGNITION
 	pinMode(PIN_IGN,OUTPUT);
@@ -61,10 +61,10 @@ void setup() {
 //	gyro.setGyroSensitivity(1);
 	delay(500);
 	disp_pwroff();
-}
 
-void loop() {
-	TICK++;
-	func_batvolt_update(NULL);
-	sleep(1);
+	while (1) {
+		TICK++;
+		func_batvolt_update(NULL);
+		sleep(1);
+	}
 }

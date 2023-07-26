@@ -314,6 +314,8 @@ void func_tracker_shiplist_update(void *param) {
 				case LORAGPS_INFO_POSE:
 					memcpy(&(ship->ship_pose),pk_probe.fields,sizeof(struct packet_pose_t));
 					break;
+				default:
+					break;
 			}
 		}
 	}
@@ -531,6 +533,8 @@ void func_tracker_shipinfo(struct ship_data_t *ship) {
 			case R:
 				menu_exec(&shipctrl_menu,NULL);
 				break;
+			default:
+				break;
 		}
 		delay(TICKINT);
 	}
@@ -617,6 +621,8 @@ void func_tracker_selship(struct ship_list_t *shiplist) {
 				delay(100);
 				sig[0]=LORAGPS_CTRL_LORA_ON;
 				func_tracker_shipctrl_sendcommand(&sig);
+				break;
+			default:
 				break;
 		}
 		delay(TICKINT);
