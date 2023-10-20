@@ -10,13 +10,13 @@
 #include <SPI.h>
 #include <SX126XLT.h>
 
-#include "common_misc.h"
-#include "conf_lora.h"
-#include "resc_display.h"
-#include "resc_joystick.h"
-#include "resc_gps.h"
-#include "resc_bme680.h"
-#include "resc_QMC5883L.h"
+#include "common_misc.hpp"
+#include "conf_lora.hpp"
+#include "resc_display.hpp"
+#include "resc_joystick.hpp"
+#include "resc_gps.hpp"
+#include "resc_bme680.hpp"
+#include "resc_QMC5883L.hpp"
 
 // ----- Comm Protocol -----
 #define LORAGPS_HANDHELDID 0x0001
@@ -121,6 +121,6 @@ void func_tracker_selship(struct ship_list_t *shiplist);
 
 void func_tracker_destroy_shiplist(struct ship_list_t *shiplist);
 
-void *app_tracker(void *param);
+void *app_tracker(const void *param);
 
 #endif

@@ -1,4 +1,4 @@
-#include "resc_display.h"
+#include "resc_display.hpp"
 
 TwoWire I2C_SSD1306=TwoWire(0);
 Adafruit_SSD1306 disp(SCREEN_WIDTH, SCREEN_HEIGHT, &I2C_SSD1306, RST_OLED);

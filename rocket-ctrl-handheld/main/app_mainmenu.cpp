@@ -1,7 +1,265 @@
-#include "app_mainmenu.h"
+#include "app_mainmenu.hpp"
 
-struct menuitem_t *mainmenu;
+//struct menuitem_t *mainmenu;
 
+const struct menu_page_t mainmenu_p_0={4,mainmenu_0};
+const struct menu_page_t mainmenu_p_3={4,mainmenu_3};
+const struct menu_page_t mainmenu_p_3_0={3,mainmenu_3_0};
+const struct menu_page_t mainmenu_p_3_0_1={2,mainmenu_3_0_1};
+const struct menu_page_t mainmenu_p_3_0_2={2,mainmenu_3_0_2};
+const struct menu_page_t mainmenu_p_3_1={3,mainmenu_3_1};
+const struct menu_page_t mainmenu_p_3_1_0={2,mainmenu_3_1_0};
+const struct menu_page_t mainmenu_p_3_1_1={2,mainmenu_3_1_1};
+const struct menu_page_t mainmenu_p_3_1_2={4,mainmenu_3_1_2};
+
+const struct menu_item_t mainmenu_0[4]={
+	{
+		.id=0,
+		.desc="Trackers",
+		.enter_behavior=1,
+		.drop_menu=1,
+		.routine={.func=&app_tracker},
+		.param=NULL
+	},
+	{
+		.id=1,
+		.desc="LocalGPS",
+		.enter_behavior=1,
+		.drop_menu=1,
+		.routine={.func=&app_gps},
+		.param=NULL
+	},
+	{
+		.id=2,
+		.desc="Sensors",
+		.enter_behavior=1,
+		.drop_menu=1,
+		.routine={.func=&app_sensors},
+		.param=NULL
+	},
+	{
+		.id=3,
+		.desc="Settings",
+		.enter_behavior=0,
+		.drop_menu=0,
+		.routine={.page=&mainmenu_p_3},
+		.param=NULL
+	}
+};
+
+const struct menu_item_t mainmenu_3[4]={
+	{
+		.id=0,
+		.desc="System",
+		.enter_behavior=0,
+		.drop_menu=0,
+		.routine={.page=&mainmenu_p_3_0},
+		.param=NULL
+	},
+	{
+		.id=1,
+		.desc="GPS",
+		.enter_behavior=0,
+		.drop_menu=0,
+		.routine={.page=&mainmenu_p_3_1},
+		.param=NULL
+	},
+	{
+		.id=2,
+		.desc="LoRa",
+		.enter_behavior=1,
+		.drop_menu=0,
+		.routine={.func=&loraconf_enter},
+		.param=NULL
+	},
+	{
+		.id=3,
+		.desc="Sleep",
+		.enter_behavior=1,
+		.drop_menu=1,
+		.routine={.func=&func_deepsleep},
+		.param=NULL
+	}
+};
+
+const struct menu_item_t mainmenu_3_0[3]={
+	{
+		.id=0,
+		.desc="Display",
+		.enter_behavior=1,
+		.drop_menu=0,
+		.routine={.func=&func_setbrightness},
+		.param=NULL
+	},
+	{
+		.id=1,
+		.desc="Bat Volt",
+		.enter_behavior=0,
+		.drop_menu=0,
+		.routine={.page=&mainmenu_p_3_0_1},
+		.param=NULL
+	},
+	{
+		.id=2,
+		.desc="Chip Temp",
+		.enter_behavior=0,
+		.drop_menu=0,
+		.routine={.page=&mainmenu_p_3_0_2},
+		.param=NULL
+	}
+};
+
+const struct menu_item_t mainmenu_3_0_1[2]={
+	{
+		.id=0,
+		.desc="Enable",
+		.enter_behavior=1,
+		.drop_menu=0,
+		.routine={.func=&func_quick_settings},
+		.param=&mainmenu_param_3_0_1_0
+	},
+	{
+		.id=1,
+		.desc="Disable",
+		.enter_behavior=1,
+		.drop_menu=0,
+		.routine={.func=&func_quick_settings},
+		.param=&mainmenu_param_3_0_1_1
+	}
+};
+const uint8_t mainmenu_param_3_0_1_0=SYS_VOLT_1;
+const uint8_t mainmenu_param_3_0_1_1=SYS_VOLT_2;
+
+const struct menu_item_t mainmenu_3_0_2[2]={
+	{
+		.id=0,
+		.desc="Enable",
+		.enter_behavior=1,
+		.drop_menu=0,
+		.routine={.func=&func_quick_settings},
+		.param=&mainmenu_param_3_0_2_0
+	},
+	{
+		.id=1,
+		.desc="Disable",
+		.enter_behavior=1,
+		.drop_menu=0,
+		.routine={.func=&func_quick_settings},
+		.param=&mainmenu_param_3_0_2_1
+	}
+};
+const uint8_t mainmenu_param_3_0_2_0=SYS_TEMP_1;
+const uint8_t mainmenu_param_3_0_2_1=SYS_TEMP_2;
+
+const struct menu_item_t mainmenu_3_1[3]={
+	{
+		.id=0,
+		.desc="Power",
+		.enter_behavior=0,
+		.drop_menu=0,
+		.routine={.page=&mainmenu_p_3_1_0},
+		.param=NULL
+	},
+	{
+		.id=1,
+		.desc="Parser",
+		.enter_behavior=0,
+		.drop_menu=0,
+		.routine={.page=&mainmenu_p_3_1_1},
+		.param=NULL
+	},
+	{
+		.id=2,
+		.desc="Frequency",
+		.enter_behavior=0,
+		.drop_menu=0,
+		.routine={.page=&mainmenu_p_3_1_2},
+		.param=NULL
+	}
+};
+
+const struct menu_item_t mainmenu_3_1_0[2]={
+	{
+		.id=0,
+		.desc="On",
+		.enter_behavior=1,
+		.drop_menu=0,
+		.routine={.func=&func_quick_settings},
+		.param=&mainmenu_param_3_1_0_0
+	},
+	{
+		.id=1,
+		.desc="Off",
+		.enter_behavior=1,
+		.drop_menu=0,
+		.routine={.func=&func_quick_settings},
+		.param=&mainmenu_param_3_1_0_1
+	}
+};
+const uint8_t mainmenu_param_3_1_0_0=SYS_GPS_1_1;
+const uint8_t mainmenu_param_3_1_0_1=SYS_GPS_1_2;
+
+const struct menu_item_t mainmenu_3_1_1[2]={
+	{
+		.id=0,
+		.desc="Enable",
+		.enter_behavior=1,
+		.drop_menu=0,
+		.routine={.func=&func_quick_settings},
+		.param=&mainmenu_param_3_1_1_0
+	},
+	{
+		.id=1,
+		.desc="Disable",
+		.enter_behavior=1,
+		.drop_menu=0,
+		.routine={.func=&func_quick_settings},
+		.param=&mainmenu_param_3_1_1_1
+	}
+};
+const uint8_t mainmenu_param_3_1_1_0=SYS_GPS_2_1;
+const uint8_t mainmenu_param_3_1_1_1=SYS_GPS_2_2;
+
+const struct menu_item_t mainmenu_3_1_2[4]={
+	{
+		.id=0,
+		.desc="0.5 Hz",
+		.enter_behavior=1,
+		.drop_menu=0,
+		.routine={.func=&func_quick_settings},
+		.param=&mainmenu_param_3_1_2_0
+	},
+	{
+		.id=1,
+		.desc="1 Hz",
+		.enter_behavior=1,
+		.drop_menu=0,
+		.routine={.func=&func_quick_settings},
+		.param=&mainmenu_param_3_1_2_1
+	},
+	{
+		.id=2,
+		.desc="2 Hz",
+		.enter_behavior=1,
+		.drop_menu=0,
+		.routine={.func=&func_quick_settings},
+		.param=&mainmenu_param_3_1_2_2
+	},
+	{
+		.id=3,
+		.desc="5 Hz",
+		.enter_behavior=1,
+		.drop_menu=0,
+		.routine={.func=&func_quick_settings},
+		.param=&mainmenu_param_3_1_2_3
+	}
+};
+const uint8_t mainmenu_param_3_1_2_0=SYS_GPS_3_1;
+const uint8_t mainmenu_param_3_1_2_1=SYS_GPS_3_2;
+const uint8_t mainmenu_param_3_1_2_2=SYS_GPS_3_3;
+const uint8_t mainmenu_param_3_1_2_3=SYS_GPS_3_4;
+
+/*
 // Setup static menu entries
 struct menuitem_t *mainmenu_load(uint8_t levels[]) {
 	struct menuitem_t *menu=NULL;
@@ -316,6 +574,7 @@ struct menuitem_t *mainmenu_load(uint8_t levels[]) {
 	}
 	return menu;
 }
+*/
 
 // main menu program
 //void app_mainmenu() {

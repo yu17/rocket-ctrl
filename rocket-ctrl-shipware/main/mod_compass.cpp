@@ -1,4 +1,4 @@
-#include "mod_compass.h"
+#include "mod_compass.hpp"
 
 TwoWire I2C_GY271=TwoWire(0);
 

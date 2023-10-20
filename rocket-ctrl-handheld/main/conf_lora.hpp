@@ -4,7 +4,7 @@
 #include <SPI.h>
 #include <SX126XLT.h>
 
-#include "common_menu.h"
+#include "common_menu.hpp"
 
 #define LORA_CONF_FREQ 0x01
 #define LORA_CONF_OFFSET 0x02
@@ -32,7 +32,7 @@ extern uint8_t PacketLen;
 extern uint8_t PacketID;
 extern uint8_t *PacketBuffer[255];
 
-void* loraconf_enter(void *param);
+void* loraconf_enter(const void *param);
 
 struct menuitem_t *loraconf_menu(uint8_t levels[]);
 

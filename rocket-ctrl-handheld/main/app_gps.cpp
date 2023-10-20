@@ -1,6 +1,6 @@
-#include "app_gps.h"
+#include "app_gps.hpp"
 
-void *app_gps(void *param) {
+void *app_gps(const void *param) {
 	enum JOY_DISCRETE joy;
 	disp.setTextSize(1);//21 characters per line
 	TICK=0;

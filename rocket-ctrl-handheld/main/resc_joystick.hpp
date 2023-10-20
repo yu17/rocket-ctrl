@@ -2,8 +2,8 @@
 #define resc_joystick 1.0
 
 #include <Arduino.h>
-#include "resc_display.h"
-#include "common_misc.h"
+#include "resc_display.hpp"
+#include "common_misc.hpp"
 
 #define JOY_UD A1
 #define JOY_LR A3

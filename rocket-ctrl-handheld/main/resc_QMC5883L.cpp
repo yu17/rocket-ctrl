@@ -1,4 +1,4 @@
-#include "resc_QMC5883L.h"
+#include "resc_QMC5883L.hpp"
 
 static void write_register( int addr, int reg, int value ) {
 	I2C2.beginTransmission(addr);

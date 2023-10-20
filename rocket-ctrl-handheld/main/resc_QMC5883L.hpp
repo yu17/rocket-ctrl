@@ -6,7 +6,7 @@
 #include <Arduino.h>
 #include <Wire.h>
 
-#include "common_misc.h"
+#include "common_misc.hpp"
 
 // ----- GY271 -----
 #define GY271_I2C_ADDR 0x0D

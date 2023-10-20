@@ -1,4 +1,4 @@
-#include "resc_joystick.h"
+#include "resc_joystick.hpp"
 
 bool PRGSW_def,PRGSW_act=0;
 

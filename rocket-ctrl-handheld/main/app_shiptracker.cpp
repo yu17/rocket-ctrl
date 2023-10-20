@@ -1,4 +1,4 @@
-#include "app_shiptracker.h"
+#include "app_shiptracker.hpp"
 
 const size_t packet_header_size=sizeof(uint8_t)*3+sizeof(uint16_t);
 
@@ -639,7 +639,7 @@ void func_tracker_destroy_shiplist(struct ship_list_t *shiplist) {
 	free(ship);
 }
 
-void *app_tracker(void *param) {
+void *app_tracker(const void *param) {
 	TaskHandle_t Task_LoRa;
 	struct ship_list_t *shiplist=(struct ship_list_t *)malloc(sizeof(struct ship_list_t));
 	shiplist->ship=NULL;

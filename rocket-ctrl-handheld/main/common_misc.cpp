@@ -1,4 +1,4 @@
-#include "common_misc.h"
+#include "common_misc.hpp"
 
 TwoWire I2C2=TwoWire(1);
 
@@ -21,7 +21,7 @@ void func_batvolt_update(void *param) {
 	}
 }
 
-void *func_setbrightness(void *param) {
+void *func_setbrightness(const void *param) {
 	disp.setTextSize(1);
 	enum JOY_DISCRETE joy;
 	uint8_t brightness_cache=disp_brightness;
@@ -66,7 +66,7 @@ void *func_setbrightness(void *param) {
 	return NULL;
 }
 
-void *func_quick_settings(void *param) {
+void *func_quick_settings(const void *param) {
 	if (*((int*)param)==SYS_GPS_1_1) digitalWrite(Vext,LOW);
 	else if (*((int*)param)==SYS_GPS_1_2) digitalWrite(Vext,HIGH);
 	else if (*((int*)param)==SYS_GPS_2_1 && !GPS_bg_runflag) {
@@ -88,7 +88,7 @@ void *func_quick_settings(void *param) {
 	return NULL;
 }
 
-void *func_deepsleep(void *param) {
+void *func_deepsleep(const void *param) {
 	digitalWrite(Vext,HIGH);
 	rtc_gpio_init(GPIO_NUM_0);
 	rtc_gpio_pullup_en(GPIO_NUM_0);

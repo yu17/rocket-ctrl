@@ -3,7 +3,7 @@
 
 #include <TinyGPS++.h>
 
-#include "resc_display.h"
+#include "resc_display.hpp"
 
 // ----- GPS -----
 extern TinyGPSPlus GPS;

@@ -1,4 +1,4 @@
-#include "mod_lora.h"
+#include "mod_lora.hpp"
 
 //LoRa Modem Parameters
 const uint32_t LoRa_Freq = 915000000;           //frequency of transmissions in hertz
@@ -52,10 +52,12 @@ void func_shipctrl_rx(void *param) {
 		if (PacketLen && pk_probe.magicnum==LORAGPS_HHLD_HEAD) {
 			switch (pk_probe.sig) {
 				case LORAGPS_CTRL_POWR_OFF:
+					LoRa.clearIrqStatus(IRQ_RADIO_ALL);
+					LoRa.setDioIrqParams(IRQ_RADIO_ALL,IRQ_RADIO_ALL,IRQ_RADIO_ALL,IRQ_RADIO_ALL);
 					digitalWrite(Vext,HIGH);
-					rtc_gpio_init(GPIO_NUM_0);
-					rtc_gpio_pullup_en(GPIO_NUM_0);
-					esp_sleep_enable_ext0_wakeup(GPIO_NUM_0,LOW);
+					rtc_gpio_init(GPIO_NUM_14);
+					rtc_gpio_pulldown_en(GPIO_NUM_14);
+					esp_sleep_enable_ext0_wakeup(GPIO_NUM_14,HIGH);
 					esp_deep_sleep_start();
 					break;
 				case LORAGPS_CTRL_LED_ON:
@@ -177,6 +179,7 @@ void func_lora_setup() {
 	SPI.begin(SCK_LoRa,MISO_LoRa,MOSI_LoRa,SS_LoRa);
 	while (!LoRa.begin(SS_LoRa,RST_LoRa,BUSY_LoRa,DIO1_LoRa,SW_LoRa,DEVICE_SX1262)) delay(2000);
 	LoRa.setupLoRa(LoRa_Freq, LoRa_Offset, LoRa_SpreadingFactor, LoRa_Bandwidth, LoRa_CodeRate, LoRa_Optimisation);
+	LoRa.setDioIrqParams(IRQ_RADIO_NONE,IRQ_RADIO_NONE,IRQ_RADIO_NONE,IRQ_RADIO_NONE);
 
 	xTaskCreate(func_shipctrl_rx,"Comm RX",100000,NULL,0,&Task_Comm);
 }

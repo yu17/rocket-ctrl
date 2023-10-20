@@ -7,10 +7,10 @@
 #include <SPI.h>
 #include <SX126XLT.h>
 
-#include "common_misc.h"
-#include "mod_disp.h"
-#include "mod_gps.h"
-#include "mod_compass.h"
+#include "common_misc.hpp"
+#include "mod_disp.hpp"
+#include "mod_gps.hpp"
+#include "mod_compass.hpp"
 
 #define LORA_DEVICE DEVICE_SX1262               //we need to define the device we are using
 

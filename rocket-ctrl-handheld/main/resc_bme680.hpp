@@ -8,9 +8,9 @@
 #include <Wire.h>
 #include <Adafruit_BME680.h>
 
-#include "common_misc.h"
-#include "resc_joystick.h"
-#include "resc_display.h"
+#include "common_misc.hpp"
+#include "resc_joystick.hpp"
+#include "resc_display.hpp"
 
 extern Adafruit_BME680 BME680;
 

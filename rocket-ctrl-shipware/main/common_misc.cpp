@@ -1,4 +1,4 @@
-#include "common_misc.h"
+#include "common_misc.hpp"
 
 bool PRGSW_def,PRGSW_act;
 

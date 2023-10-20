@@ -1,4 +1,4 @@
-#include "mod_disp.h"
+#include "mod_disp.hpp"
 
 TwoWire I2C_SSD1306=TwoWire(1);
 Adafruit_SSD1306 disp(SCREEN_WIDTH, SCREEN_HEIGHT, &I2C_SSD1306, RST_OLED);

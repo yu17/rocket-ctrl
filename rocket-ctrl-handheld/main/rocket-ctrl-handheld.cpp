@@ -7,17 +7,17 @@
 #include <Adafruit_Sensor.h>
 #include <Adafruit_BME680.h>
 
-#include "conf_lora.h"
-#include "resc_display.h"
+#include "conf_lora.hpp"
+#include "resc_display.hpp"
 //#include "resc_keyboard.h"
-#include "resc_joystick.h"
-#include "resc_gps.h"
-#include "common_misc.h"
-#include "common_menu.h"
-#include "app_shiptracker.h"
-#include "app_gps.h"
-#include "app_sensors.h"
-#include "app_mainmenu.h"
+#include "resc_joystick.hpp"
+#include "resc_gps.hpp"
+#include "common_misc.hpp"
+#include "common_menu.hpp"
+#include "app_shiptracker.hpp"
+#include "app_gps.hpp"
+#include "app_sensors.hpp"
+#include "app_mainmenu.hpp"
 
 #define LORA_DEVICE DEVICE_SX1262               //we need to define the device we are using
 
@@ -68,11 +68,19 @@ extern "C" void app_main() {
 	disp.clearDisplay();
 	disp.display();
 
+	int t=30;
+	while (--t) {
+		sprintf(buffer,"Temp  = %.3f%cC",BME680.readTemperature(),248);
+		Serial.println(buffer);
+		delay(1000);
+	}
+	func_deepsleep(NULL);
+
 	while (1) {
 		c=joy_read(0);
 		if (c==P) disp_switch();
 		if (c==R && disp_flag_on) {
-			menu_exec(mainmenu_load,NULL);
+			menu_exec(&mainmenu_p_0);
 			TICK=0;
 		}
 		if (!TICK%10) {

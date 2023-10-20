@@ -1,4 +1,4 @@
-#include "mod_gps.h"
+#include "mod_gps.hpp"
 
 TinyGPSPlus GPS;
 TaskHandle_t Task_GPS;

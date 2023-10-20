@@ -1,4 +1,4 @@
-#include "conf_lora.h"
+#include "conf_lora.hpp"
 
 uint32_t LoRa_Freq = 915000000;				//frequency of transmissions in hertz
 uint32_t LoRa_Offset = 0;					//offset frequency for calibration purposes
@@ -15,7 +15,7 @@ uint8_t PacketLen;
 uint8_t PacketID;
 uint8_t *PacketBuffer[255];
 
-void* loraconf_enter(void *param) {menu_exec(&loraconf_menu,&loraconf_menumark);return NULL;}
+void* loraconf_enter(const void *param) {menu_exec(&loraconf_menu,&loraconf_menumark);return NULL;}
 
 struct menuitem_t *loraconf_menu(uint8_t levels[]) {
 	struct menuitem_t *menu=NULL;

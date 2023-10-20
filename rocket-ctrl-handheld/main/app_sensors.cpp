@@ -1,6 +1,6 @@
-#include "app_sensors.h"
+#include "app_sensors.hpp"
 
-void *app_sensors(void *param) {
+void *app_sensors(const void *param) {
 	enum JOY_DISCRETE joy;
 	disp.setTextSize(1);//21 characters per line
 	TICK=0;

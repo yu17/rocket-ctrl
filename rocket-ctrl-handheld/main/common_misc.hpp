@@ -9,13 +9,13 @@
 #include <Adafruit_SSD1306.h>
 #include <Adafruit_Sensor.h>
 
-#include "resc_display.h"
-#include "resc_joystick.h"
-#include "common_menu.h"
-#include "app_shiptracker.h"
-#include "app_gps.h"
-#include "app_sensors.h"
-#include "app_mainmenu.h"
+#include "resc_display.hpp"
+#include "resc_joystick.hpp"
+#include "common_menu.hpp"
+#include "app_shiptracker.hpp"
+#include "app_gps.hpp"
+#include "app_sensors.hpp"
+#include "app_mainmenu.hpp"
 
 // ----- Settings -----
 #define SYS_GPS_1_1 0x22
@@ -52,10 +52,10 @@ extern float batvolt_value;
 
 void func_batvolt_update(void *param);
 
-void *func_setbrightness(void *param);
+void *func_setbrightness(const void *param);
 
-void *func_quick_settings(void *param);
+void *func_quick_settings(const void *param);
 
-void *func_deepsleep(void *param);
+void *func_deepsleep(const void *param);
 
 #endif

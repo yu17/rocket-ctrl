@@ -1,4 +1,4 @@
-#include "resc_bme680.h"
+#include "resc_bme680.hpp"
 
 Adafruit_BME680 BME680(&I2C2);
 

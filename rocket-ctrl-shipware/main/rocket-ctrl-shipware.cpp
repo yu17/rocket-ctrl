@@ -4,11 +4,11 @@
 #include <Wire.h>
 #include <GY521.h>
 
-#include "common_misc.h"
-#include "mod_disp.h"
-#include "mod_gps.h"
-#include "mod_lora.h"
-#include "mod_compass.h"
+#include "common_misc.hpp"
+#include "mod_disp.hpp"
+#include "mod_gps.hpp"
+#include "mod_lora.hpp"
+#include "mod_compass.hpp"
 
 
 // ----- GY521 -----

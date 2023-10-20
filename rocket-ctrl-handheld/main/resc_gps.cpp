@@ -1,4 +1,4 @@
-#include "resc_gps.h"
+#include "resc_gps.hpp"
 
 #include <Arduino.h>
 
