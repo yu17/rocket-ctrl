@@ -42,61 +42,29 @@ static const unsigned char SYMB_DOWNTRG[] = {
 	B00001111, B00000000,
 	B00000110, B00000000};
 
-
-
-void menu_render(struct menuitem_t *item, uint8_t pos, uint8_t scale) {
+void menu_render(const struct menu_page_t *page, uint8_t id, uint8_t pos, uint8_t scale) {
 	// Scale=1 ==> line space=16pixels, 8 entries per page, 21 characters per line
 	// Scale=2 ==> line space=32pixels, 4 entries per page, 10 characters per line
 	disp.clearDisplay();
 	disp.setTextSize(scale);
 	disp.setCursor(0, 8*scale*pos);
 	//disp.write(item->desc, 32-11*scale);
-	disp.write(item->desc);
+	disp.write(page->items[id].desc);
 	uint8_t pospt=pos;
-	struct menuitem_t *itempt=item;
-	while (pospt>0 && itempt->prev) {
+	uint8_t idpt=id;
+	while (pospt>0 && idpt>0) {
 		pospt--;
-		itempt=itempt->prev;
+		idpt--;
 		disp.setCursor(0, 8*scale*pospt);
-		disp.write(itempt->desc);
+		disp.write(page->items[idpt].desc);
 	}
 	pospt=pos;
-	itempt=item;
-	while (pospt<(11-scale*4) && itempt->next) {
+	idpt=id;
+	while (pospt<(11-scale*4) && idpt<page->length-1) {
 		pospt++;
-		itempt=itempt->next;
+		idpt++;
 		disp.setCursor(0, 8*scale*pospt);
-		disp.write(itempt->desc);
-	}
-	//disp.setCursor(0, 8*scale*pos);
-	//disp.write(">");
-	for (uint8_t i=8*scale*pos;i<8*scale*(pos+1);i++) disp.drawFastHLine(0,i,DISPLAY_WIDTH,SSD1306_INVERSE);
-	disp.display();
-}
-
-void menu_render(const struct menu_item_t *item, uint8_t length, uint8_t pos, uint8_t scale) {
-	// Scale=1 ==> line space=16pixels, 8 entries per page, 21 characters per line
-	// Scale=2 ==> line space=32pixels, 4 entries per page, 10 characters per line
-	disp.clearDisplay();
-	disp.setTextSize(scale);
-	disp.setCursor(0, 8*scale*pos);
-	//disp.write(item->desc, 32-11*scale);
-	disp.write(item->desc);
-	uint8_t pospt=pos;
-	const struct menu_item_t *itempt=item;
-	while (pospt>0 && itempt->id>0) {
-		pospt--;
-		itempt--;
-		disp.setCursor(0, 8*scale*pospt);
-		disp.write(itempt->desc);
-	}
-	pospt=pos;
-	itempt=item;
-	while (pospt<(11-scale*4) && itempt->id<length-1) {
-		pospt++;
-		itempt++;
-		disp.setCursor(0, 8*scale*pospt);
-		disp.write(itempt->desc);
+		disp.write(page->items[idpt].desc);
 	}
 	//disp.setCursor(0, 8*scale*pos);
 	//disp.write(">");
@@ -114,141 +82,61 @@ void menu_render_animation(uint8_t pos, uint8_t scale, uint8_t speed) {
 	}
 }
 
-void menu_destroy(struct menuitem_t *item) {
-	while (item->prev) item=item->prev;
-	while (item->next) {
-		item=item->next;
-		if (item->prev->param) free(item->prev->param);
-		free(item->prev);
-	}
-	free(item);
-}
-
-uint8_t menu_exec(struct menuitem_t* (*menu_loader)(uint8_t[]), uint8_t* (*menu_marking)(uint8_t[])) {
-	uint8_t menu_stack[10];
-	memset(&menu_stack,0,10*sizeof(uint8_t));
-	uint8_t stackpt=0;
-	uint8_t pos=0;
-	struct menuitem_t *item=menu_loader(menu_stack);
-	//uint8_t *
-	void* (*enter)(void*)=NULL;
-	void* param=NULL;
-	enum JOY_DISCRETE joy;
-	while (item) {
-		menu_render(item, pos, 2);
-		joy=joy_read(4);
-		switch (joy) {
-			case U:
-				if (item->prev) {
-					item=item->prev;
-					if (pos>1 || (pos==1 && !item->prev)) pos--;
-				}
-				break;
-			case D:
-				if (item->next) {
-					item=item->next;
-					if (pos<2 || (pos==2 && !item->next)) pos++;
-				}
-				break;
-			case L:
-				if (stackpt) {
-					stackpt--;
-					pos=menu_stack[stackpt];
-					menu_stack[stackpt]=0;
-					menu_destroy(item);
-					item=menu_loader(menu_stack);
-					while (item->id!=pos && item->next) item=item->next;
-					if (pos==1) pos=0;
-					else pos=1;
-				}
-				else {
-					menu_destroy(item);
-					item=NULL;
-				}
-				break;
-			case R:
-				if (item->enter_behavior) {
-					if (item->enter_behavior==2) menu_render_animation(pos,2,4);
-					if (item->drop_menu) {
-						enter=item->enter;
-						param=item->param;
-						menu_destroy(item);
-						item=NULL;
-					}
-					else (*(item->enter))(item->param);
-				}
-				else {
-					menu_stack[stackpt++]=item->id;
-					menu_destroy(item);
-					item=menu_loader(menu_stack);
-					pos=0;
-				}
-				break;
-			default:
-				break;
-		}
-	}
-	disp.clearDisplay();
-	disp.display();
-	if (enter) (*enter)(param);
-	return 0;
-}
-
 uint8_t menu_exec(const struct menu_page_t *page) {
-	const struct menu_item_t *item=page->items;
-	struct menu_stack_t menu_stack[10];
+	struct menu_stack_t menu_stack[MENU_STACK_MAXDEPTH];
 	memset(&menu_stack,0,10*sizeof(struct menu_stack_t));
 	uint8_t stackpt=0;
 	uint8_t pos=0;
+	uint8_t id=0;
 	void* (*routine)(const void*)=NULL;
 	const void* param=NULL;
 	enum JOY_DISCRETE joy;
-	while (item) {
-		menu_render(item, page->length, pos, 2);
+	while (page) {
+		menu_render(page, id, pos, 2);
 		joy=joy_read(4);
 		switch (joy) {
 			case U:
-				if (item->id>0) {
-					item--;
-					if (pos>1 || (pos==1 && item->id==0)) pos--;
+				if (id>0) {
+					id--;
+					if (pos>1 || (pos==1 && id==0)) pos--;
 				}
 				break;
 			case D:
-				if (item->id<page->length-1) {
-					item++;
-					if (pos<2 || (pos==2 && item->id==page->length-1)) pos++;
+				if (id<page->length-1) {
+					id++;
+					if (pos<2 || (pos==2 && id==page->length-1)) pos++;
 				}
 				break;
 			case L:
 				if (stackpt) {
 					stackpt--;
 					page=menu_stack[stackpt].page;
-					item=page->items+menu_stack[stackpt].item_index;
+					id=menu_stack[stackpt].item_id;
 					menu_stack[stackpt].page=NULL;
-					menu_stack[stackpt].item_index=0;
-					if (item->id==0) pos=0;
+					menu_stack[stackpt].item_id=0;
+					if (id==0) pos=0;
 					else pos=1;
 				}
 				else {
-					item=NULL;
+					page=NULL;
 				}
 				break;
 			case R:
-				if (item->enter_behavior) {
-					if (item->enter_behavior==2) menu_render_animation(pos,2,4);
-					if (item->drop_menu) {
-						routine=item->routine.func;
-						param=item->param;
-						item=NULL;
+				if (page->items[id].enter_behavior) {
+					if (page->items[id].enter_behavior==2) menu_render_animation(pos,2,4);
+					if (page->items[id].drop_menu) {
+						routine=page->items[id].routine.func;
+						param=page->items[id].param;
+						page=NULL;
 					}
-					else (*(item->routine.func))(item->param);
+					else (*(page->items[id].routine.func))(page->items[id].param);
 				}
 				else {
 					menu_stack[stackpt].page=page;
-					menu_stack[stackpt].item_index=item->id;
+					menu_stack[stackpt].item_id=id;
 					stackpt++;
-					page=item->routine.page;
-					item=page->items;
+					page=page->items[id].routine.page;
+					id=0;
 					pos=0;
 				}
 				break;

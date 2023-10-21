@@ -67,21 +67,21 @@ void *func_setbrightness(const void *param) {
 }
 
 void *func_quick_settings(const void *param) {
-	if (*((int*)param)==SYS_GPS_1_1) digitalWrite(Vext,LOW);
-	else if (*((int*)param)==SYS_GPS_1_2) digitalWrite(Vext,HIGH);
-	else if (*((int*)param)==SYS_GPS_2_1 && !GPS_bg_runflag) {
+	if ((uint32_t)param==SYS_GPS_1_1) digitalWrite(Vext,LOW);
+	else if ((uint32_t)param==SYS_GPS_1_2) digitalWrite(Vext,HIGH);
+	else if ((uint32_t)param==SYS_GPS_2_1 && !GPS_bg_runflag) {
 		xTaskCreatePinnedToCore(func_GPS_update,"GPS Parse",100000,NULL,0,&Task_GPS,0);
 		GPS_bg_runflag=true;
 	}
-	else if (*((int*)param)==SYS_GPS_2_2 && GPS_bg_runflag) {
+	else if ((uint32_t)param==SYS_GPS_2_2 && GPS_bg_runflag) {
 		vTaskDelete(Task_GPS);
 		GPS_bg_runflag=false;
 	}
-	else if (*((int*)param)==SYS_VOLT_1 && !batvolt_flag_enabled) {
+	else if ((uint32_t)param==SYS_VOLT_1 && !batvolt_flag_enabled) {
 		xTaskCreate(func_batvolt_update,"Battery Voltage",10000,NULL,0,&Task_batvolt);
 		batvolt_flag_enabled=true;
 	}
-	else if (*((int*)param)==SYS_VOLT_2 && batvolt_flag_enabled) {
+	else if ((uint32_t)param==SYS_VOLT_2 && batvolt_flag_enabled) {
 		vTaskDelete(Task_batvolt);
 		batvolt_flag_enabled=false;
 	}

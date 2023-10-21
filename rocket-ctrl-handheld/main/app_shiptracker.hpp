@@ -15,7 +15,7 @@
 #include "resc_display.hpp"
 #include "resc_joystick.hpp"
 #include "resc_gps.hpp"
-#include "resc_bme680.hpp"
+#include "resc_bme280.hpp"
 #include "resc_QMC5883L.hpp"
 
 // ----- Comm Protocol -----
@@ -107,9 +107,24 @@ struct ship_list_t{
 	struct ship_data_t *ship;
 };
 
-struct menuitem_t *shipctrl_menu(uint8_t levels[]);
+// ----- Shipctrl Menu -----
+extern const struct menu_page_t shipctrlmenu_p,
+    shipctrlmenu_p_0,
+	shipctrlmenu_p_1,
+	shipctrlmenu_p_2,
+	shipctrlmenu_p_3,
+	shipctrlmenu_p_4,
+	shipctrlmenu_p_5;
 
-void* func_tracker_shipctrl_sendcommand(void* param);
+extern const struct menu_item_t shipctrlmenu[6],
+    shipctrlmenu_0[4],
+	shipctrlmenu_1[3],
+	shipctrlmenu_2[3],
+	shipctrlmenu_3[3],
+	shipctrlmenu_4[1],
+	shipctrlmenu_5[1];
+
+void* func_tracker_shipctrl_sendcommand(const void* param);
 
 void func_tracker_shiplist_update(void *param);
 

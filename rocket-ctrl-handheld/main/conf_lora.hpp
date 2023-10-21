@@ -32,12 +32,25 @@ extern uint8_t PacketLen;
 extern uint8_t PacketID;
 extern uint8_t *PacketBuffer[255];
 
-void* loraconf_enter(const void *param);
+// ----- LoRa configuration menu -----
+extern const struct menu_page_t loraconfmenu_p,
+	loraconfmenu_p_2,
+	loraconfmenu_p_3,
+	loraconfmenu_p_4,
+	loraconfmenu_p_5,
+	loraconfmenu_p_6,
+	loraconfmenu_p_7,
+	loraconfmenu_p_8;
 
-struct menuitem_t *loraconf_menu(uint8_t levels[]);
+extern const struct menu_item_t loraconfmenu[9],
+	loraconfmenu_2[10],
+	loraconfmenu_3[8],
+	loraconfmenu_4[4];
+
+void* loraconf_enter(const void *param);
 
 uint8_t *loraconf_menumark(uint8_t levels[]);
 
-void* loraconf_config(void* param);
+void* loraconf_config(const void* param);
 
 #endif

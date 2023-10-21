@@ -5,7 +5,7 @@
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
 #include <Adafruit_Sensor.h>
-#include <Adafruit_BME680.h>
+#include <Adafruit_BME280.h>
 
 #include "conf_lora.hpp"
 #include "resc_display.hpp"
@@ -44,8 +44,8 @@ extern "C" void app_main() {
 	if (PRGSW_def) disp.write(">>> PRGSW HIGH\n");
 	else disp.write(">>> PRGSW LOW\n");
 	disp.display();
-	// BME680
-	bme680_init();
+	// BME280
+	bme280_init();
 	// Compass
 	compass_init();
 	// Battery Voltage
@@ -68,19 +68,11 @@ extern "C" void app_main() {
 	disp.clearDisplay();
 	disp.display();
 
-	int t=30;
-	while (--t) {
-		sprintf(buffer,"Temp  = %.3f%cC",BME680.readTemperature(),248);
-		Serial.println(buffer);
-		delay(1000);
-	}
-	func_deepsleep(NULL);
-
 	while (1) {
 		c=joy_read(0);
 		if (c==P) disp_switch();
 		if (c==R && disp_flag_on) {
-			menu_exec(&mainmenu_p_0);
+			menu_exec(&mainmenu_p);
 			TICK=0;
 		}
 		if (!TICK%10) {

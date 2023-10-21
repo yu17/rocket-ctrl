@@ -6,14 +6,14 @@
 #include <driver/rtc_io.h>
 
 #include <Wire.h>
-#include <Adafruit_BME680.h>
+#include <Adafruit_BME280.h>
 
 #include "common_misc.hpp"
 #include "resc_joystick.hpp"
 #include "resc_display.hpp"
 
-extern Adafruit_BME680 BME680;
+extern Adafruit_BME280 BME280;
 
-void bme680_init();
+void bme280_init();
 
 #endif
