@@ -42,7 +42,7 @@ static const unsigned char SYMB_DOWNTRG[] = {
 	B00001111, B00000000,
 	B00000110, B00000000};
 
-void menu_render(const struct menu_page_t *page, uint8_t id, uint8_t pos, uint8_t scale) {
+void menu_render(const struct menu_page_t *page, uint8_t id, uint8_t pos, uint8_t scale, int32_t marking) {
 	// Scale=1 ==> line space=16pixels, 8 entries per page, 21 characters per line
 	// Scale=2 ==> line space=32pixels, 4 entries per page, 10 characters per line
 	disp.clearDisplay();
@@ -50,6 +50,7 @@ void menu_render(const struct menu_page_t *page, uint8_t id, uint8_t pos, uint8_
 	disp.setCursor(0, 8*scale*pos);
 	//disp.write(item->desc, 32-11*scale);
 	disp.write(page->items[id].desc);
+	if (id==marking) disp.drawCircle(128-4*scale,8*scale*pos+4*scale,4,SSD1306_INVERSE);
 	uint8_t pospt=pos;
 	uint8_t idpt=id;
 	while (pospt>0 && idpt>0) {
@@ -57,6 +58,7 @@ void menu_render(const struct menu_page_t *page, uint8_t id, uint8_t pos, uint8_
 		idpt--;
 		disp.setCursor(0, 8*scale*pospt);
 		disp.write(page->items[idpt].desc);
+		if (idpt==marking) disp.drawCircle(128-4*scale,8*scale*pospt+4*scale,4,SSD1306_INVERSE);
 	}
 	pospt=pos;
 	idpt=id;
@@ -65,6 +67,7 @@ void menu_render(const struct menu_page_t *page, uint8_t id, uint8_t pos, uint8_
 		idpt++;
 		disp.setCursor(0, 8*scale*pospt);
 		disp.write(page->items[idpt].desc);
+		if (idpt==marking) disp.drawCircle(128-4*scale,8*scale*pospt+4*scale,4,SSD1306_INVERSE);
 	}
 	//disp.setCursor(0, 8*scale*pos);
 	//disp.write(">");
@@ -92,7 +95,8 @@ uint8_t menu_exec(const struct menu_page_t *page) {
 	const void* param=NULL;
 	enum JOY_DISCRETE joy;
 	while (page) {
-		menu_render(page, id, pos, 2);
+		if (page->marking) menu_render(page,id,pos,2,(*(page->marking))(page->marking_param));
+		else menu_render(page, id, pos, 2, -1);
 		joy=joy_read(4);
 		switch (joy) {
 			case U:
@@ -231,4 +235,51 @@ int menu_numinput(uint8_t digits_integer, uint8_t digits_decimal, int defval, co
 				break;
 		}
 	}
+}
+
+int8_t menu_rangeinput(int8_t min, int8_t max, int8_t interval, int8_t defval, const char* unit) {
+	enum JOY_DISCRETE joy;
+	int8_t val=defval;
+	while (1) {
+		disp.clearDisplay();
+		disp.drawBitmap((128-SYMB_UPTRG_W)/2,64/2-16/2-14,SYMB_UPTRG,SYMB_UPTRG_W,SYMB_UPTRG_H,SSD1306_INVERSE);
+		disp.drawBitmap((128-SYMB_DOWNTRG_W)/2,64/2+16/2+8,SYMB_DOWNTRG,SYMB_DOWNTRG_W,SYMB_DOWNTRG_H,SSD1306_INVERSE);
+		disp.setTextSize(2);
+		// Calculate the number of digits so as to determine the coordinates for display
+		uint8_t digits=(val<=0);// Add one digit for negative sign; Also add one digit when val=0
+		int8_t temp=val;
+		while (temp) {digits++;temp/=10;}
+		sprintf(buffer,"%d",val);
+		disp.setCursor((128-12*digits)/2,24);
+		disp.write(buffer);
+		disp.setTextSize(1);
+		disp.setCursor((128+12*digits)/2+4,32);
+		disp.write(unit);
+		disp.display();
+		joy=joy_read(4);
+		switch (joy) {
+			case U:
+				if (val<=max-interval) val+=interval;
+				else val=max;
+				break;
+			case D:
+				if (val>=min+interval) val-=interval;
+				else val=min;
+				break;
+			case L:
+				if (val>=min+5*interval) val-=5*interval;
+				else val=min;
+				break;
+			case R:
+				if (val<=max-5*interval) val+=5*interval;
+				else val=max;
+				break;
+			case B:
+				return val;
+				break;
+			default:
+				break;
+		}
+	}
+	return val;
 }

@@ -9,20 +9,16 @@ void *app_sensors(const void *param) {
 	uint8_t page=0;
 
 	// Config sensor
-	BME280.setSampling(Adafruit_BME280::BME280_MODE_NORMAL,
-                    Adafruit_BME280::BME280_SAMPLING_X2,  // temperature
-                    Adafruit_BME280::BME280_SAMPLING_X16, // pressure
-                    Adafruit_BME280::BME280_SAMPLING_X1,  // humidity
-                    Adafruit_BME280::BME280_FILTER_X16,
-                    Adafruit_BME280::BME280_STANDBY_MS_0_5);
+	BMP280.setSampling(Adafruit_BMP280::BMP280_MODE_NORMAL,
+                    Adafruit_BMP280::BMP280_SAMPLING_X2,  // temperature
+                    Adafruit_BMP280::BMP280_SAMPLING_X16, // pressure
+                    Adafruit_BMP280::BMP280_FILTER_X16,
+                    Adafruit_BMP280::BMP280_STANDBY_MS_1);
     // suggested rate is 25Hz
-    // 1 + (2 * T_ovs) + (2 * P_ovs + 0.5) + (2 * H_ovs + 0.5)
+    // 1 + (2 * T_ovs) + (2 * P_ovs + 0.5)
     // T_ovs = 2
     // P_ovs = 16
-    // H_ovs = 1
-    // = 40ms (25Hz)
-    // with standby time that should really be 24.16913... Hz
-    int TICKSAMPLE = 41;
+    int TICKSAMPLE = 100;
 
 	while (1) {
 		if (!TICK%90) {
@@ -30,14 +26,14 @@ void *app_sensors(const void *param) {
 				heading_ccw=(compass.readHeading()+compass_offset)%360;
 				disp.clearDisplay();
 				disp.setCursor(6, 0+4);
-				sprintf(buffer,"Temp  = %.3f%cC",BME280.readTemperature(),248);
+				sprintf(buffer,"Temp  = %.3f%cC",BMP280.readTemperature(),248);
 				disp.write(buffer);
 				disp.setCursor(6, 16+4);
-				sprintf(buffer,"Pres  = %.2fhPa",BME280.readPressure()/100.0);
+				sprintf(buffer,"Pres  = %.2fhPa",BMP280.readPressure()/100.0);
 				disp.write(buffer);
-				disp.setCursor(6, 32+4);
-				sprintf(buffer,"Humid = %.3f%%",BME280.readHumidity());
-				disp.write(buffer);
+				//disp.setCursor(6, 32+4);
+				//sprintf(buffer,"Humid = %.3f%%",BME280.readHumidity());
+				//disp.write(buffer);
 				disp.setCursor(6, 48+4);
 				sprintf(buffer,"Heading = %d",compass_course_clkflip(heading_ccw));
 				disp.write(buffer);
@@ -83,12 +79,11 @@ void *app_sensors(const void *param) {
 		TICK++;
 		delay(TICKSAMPLE);
 	}
-	BME280.setSampling(Adafruit_BME280::BME280_MODE_SLEEP,
-                    Adafruit_BME280::BME280_SAMPLING_NONE,
-                    Adafruit_BME280::BME280_SAMPLING_NONE,
-                    Adafruit_BME280::BME280_SAMPLING_NONE,
-                    Adafruit_BME280::BME280_FILTER_OFF,
-                    Adafruit_BME280::BME280_STANDBY_MS_1000);
+	BMP280.setSampling(Adafruit_BMP280::BMP280_MODE_SLEEP,
+                    Adafruit_BMP280::BMP280_SAMPLING_NONE,
+                    Adafruit_BMP280::BMP280_SAMPLING_NONE,
+                    Adafruit_BMP280::BMP280_FILTER_OFF,
+                    Adafruit_BMP280::BMP280_STANDBY_MS_4000);
 	return NULL;
 }
 

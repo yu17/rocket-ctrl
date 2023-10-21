@@ -19,7 +19,8 @@ union menu_routine_t{
 struct menu_page_t{
 	const uint8_t length;
 	const struct menu_item_t *items;
-	void* (*marking)(const void*);//Marking loader function
+	int8_t (* const marking)(uint8_t);//Marking loader function
+	const uint8_t marking_param;
 };
 
 struct menu_item_t{
@@ -40,5 +41,7 @@ void menu_render(struct menu_page_t *page, uint8_t id, uint8_t pos, uint8_t scal
 uint8_t menu_exec(const struct menu_page_t *page);
 
 int menu_numinput(uint8_t digits_integer, uint8_t digits_decimal, int defval, const char* unit);
+
+int8_t menu_rangeinput(int8_t min, int8_t max, int8_t interval, int8_t defval, const char* unit);
 
 #endif

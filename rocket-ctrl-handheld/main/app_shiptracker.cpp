@@ -4,13 +4,13 @@
 
 const size_t packet_header_size=sizeof(uint8_t)*3+sizeof(uint16_t);
 
-const struct menu_page_t shipctrlmenu_p={6,shipctrlmenu,0};
-const struct menu_page_t shipctrlmenu_p_0={4,shipctrlmenu_0,0};
-const struct menu_page_t shipctrlmenu_p_1={3,shipctrlmenu_1,0};
-const struct menu_page_t shipctrlmenu_p_2={3,shipctrlmenu_2,0};
-const struct menu_page_t shipctrlmenu_p_3={3,shipctrlmenu_3,0};
-const struct menu_page_t shipctrlmenu_p_4={1,shipctrlmenu_4,0};
-const struct menu_page_t shipctrlmenu_p_5={1,shipctrlmenu_5,0};
+const struct menu_page_t shipctrlmenu_p={6,shipctrlmenu,NULL,0};
+const struct menu_page_t shipctrlmenu_p_0={4,shipctrlmenu_0,NULL,0};
+const struct menu_page_t shipctrlmenu_p_1={3,shipctrlmenu_1,NULL,0};
+const struct menu_page_t shipctrlmenu_p_2={3,shipctrlmenu_2,NULL,0};
+const struct menu_page_t shipctrlmenu_p_3={3,shipctrlmenu_3,NULL,0};
+const struct menu_page_t shipctrlmenu_p_4={1,shipctrlmenu_4,NULL,0};
+const struct menu_page_t shipctrlmenu_p_5={1,shipctrlmenu_5,NULL,0};
 
 const struct menu_item_t shipctrlmenu[6]={
 	{

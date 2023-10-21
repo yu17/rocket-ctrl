@@ -15,7 +15,7 @@
 #include "resc_display.hpp"
 #include "resc_joystick.hpp"
 #include "resc_gps.hpp"
-#include "resc_bme280.hpp"
+#include "resc_bmp280.hpp"
 #include "resc_QMC5883L.hpp"
 
 // ----- Comm Protocol -----

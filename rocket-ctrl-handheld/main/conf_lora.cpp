@@ -17,14 +17,14 @@ uint8_t *PacketBuffer[255];
 
 void* loraconf_enter(const void *param) {menu_exec(&loraconfmenu_p);return NULL;}
 
-const struct menu_page_t loraconfmenu_p={9,loraconfmenu,0};
-const struct menu_page_t loraconfmenu_p_2={10,loraconfmenu_2,0};
-const struct menu_page_t loraconfmenu_p_3={8,loraconfmenu_3,0};
-const struct menu_page_t loraconfmenu_p_4={4,loraconfmenu_4,0};
-const struct menu_page_t loraconfmenu_p_5={4,loraconfmenu_4,0};
-const struct menu_page_t loraconfmenu_p_6={4,loraconfmenu_4,0};
-const struct menu_page_t loraconfmenu_p_7={4,loraconfmenu_4,0};
-const struct menu_page_t loraconfmenu_p_8={4,loraconfmenu_4,0};
+const struct menu_page_t loraconfmenu_p={9,loraconfmenu,NULL,0};
+const struct menu_page_t loraconfmenu_p_2={10,loraconfmenu_2,&loraconf_menumark,LORA_CONF_BANDWIDTH};
+const struct menu_page_t loraconfmenu_p_3={8,loraconfmenu_3,&loraconf_menumark,LORA_CONF_SPREADINGFACT};
+const struct menu_page_t loraconfmenu_p_4={4,loraconfmenu_4,&loraconf_menumark,LORA_CONF_CODERATE};
+const struct menu_page_t loraconfmenu_p_5={3,loraconfmenu_5,&loraconf_menumark,LORA_CONF_OPTIM};
+const struct menu_page_t loraconfmenu_p_6={4,loraconfmenu_4,NULL,0};
+const struct menu_page_t loraconfmenu_p_7={4,loraconfmenu_4,NULL,0};
+const struct menu_page_t loraconfmenu_p_8={4,loraconfmenu_4,NULL,0};
 
 const struct menu_item_t loraconfmenu[9]={
 	{
@@ -71,10 +71,10 @@ const struct menu_item_t loraconfmenu[9]={
 	},
 	{
 		.desc="Tx Power",
-		.enter_behavior=0,
+		.enter_behavior=1,
 		.drop_menu=0,
-		.routine={.page=&loraconfmenu_p_6},
-		.param=NULL
+		.routine={.func=&loraconf_config},
+		.param=(void*)LORA_CONF_TXPOWER
 	},
 	{
 		.desc="Reset",
@@ -255,37 +255,98 @@ const struct menu_item_t loraconfmenu_4[4]={
 	}
 };
 
-uint8_t *loraconf_menumark(uint8_t levels[]) {
-	uint8_t *menumark=NULL;
-	if (levels[0]==3) {
-		menumark=(uint8_t *)malloc(11*sizeof(uint8_t));
-		memset(menumark,0,11*sizeof(uint8_t));
-		menumark[0]=11;
-		menumark[1]=(LoRa_Bandwidth==LORA_BW_007);
-		menumark[2]=(LoRa_Bandwidth==LORA_BW_010);
-		menumark[3]=(LoRa_Bandwidth==LORA_BW_015);
-		menumark[4]=(LoRa_Bandwidth==LORA_BW_020);
-		menumark[5]=(LoRa_Bandwidth==LORA_BW_031);
-		menumark[6]=(LoRa_Bandwidth==LORA_BW_041);
-		menumark[7]=(LoRa_Bandwidth==LORA_BW_062);
-		menumark[8]=(LoRa_Bandwidth==LORA_BW_125);
-		menumark[9]=(LoRa_Bandwidth==LORA_BW_250);
-		menumark[10]=(LoRa_Bandwidth==LORA_BW_500);
+const struct menu_item_t loraconfmenu_5[3]={
+	{
+		.desc="Off",
+		.enter_behavior=2,
+		.drop_menu=0,
+		.routine={.func=&loraconf_config},
+		.param=(void*)(LORA_CONF_OPTIM+(LDRO_OFF<<8))
+	},
+	{
+		.desc="On",
+		.enter_behavior=2,
+		.drop_menu=0,
+		.routine={.func=&loraconf_config},
+		.param=(void*)(LORA_CONF_OPTIM+(LDRO_ON<<8))
+	},
+	{
+		.desc="Auto",
+		.enter_behavior=2,
+		.drop_menu=0,
+		.routine={.func=&loraconf_config},
+		.param=(void*)(LORA_CONF_OPTIM+(LDRO_AUTO<<8))
 	}
-	if (levels[0]==4) {
-		menumark=(uint8_t *)malloc(9*sizeof(uint8_t));
-		memset(menumark,0,9*sizeof(uint8_t));
-		menumark[0]=9;
-		menumark[1]=(LoRa_SpreadingFactor==LORA_SF5);
-		menumark[2]=(LoRa_SpreadingFactor==LORA_SF6);
-		menumark[3]=(LoRa_SpreadingFactor==LORA_SF7);
-		menumark[4]=(LoRa_SpreadingFactor==LORA_SF8);
-		menumark[5]=(LoRa_SpreadingFactor==LORA_SF9);
-		menumark[6]=(LoRa_SpreadingFactor==LORA_SF10);
-		menumark[7]=(LoRa_SpreadingFactor==LORA_SF11);
-		menumark[8]=(LoRa_SpreadingFactor==LORA_SF12);
+};
+
+int8_t loraconf_menumark(const uint8_t param) {
+	if (param==LORA_CONF_BANDWIDTH) {
+		switch (LoRa_Bandwidth) {
+			case LORA_BW_007:
+				return 0;
+			case LORA_BW_010:
+				return 1;
+			case LORA_BW_015:
+				return 2;
+			case LORA_BW_020:
+				return 3;
+			case LORA_BW_031:
+				return 4;
+			case LORA_BW_041:
+				return 5;
+			case LORA_BW_062:
+				return 6;
+			case LORA_BW_125:
+				return 7;
+			case LORA_BW_250:
+				return 8;
+			case LORA_BW_500:
+				return 9;
+		}
 	}
-	return menumark;
+	else if (param==LORA_CONF_SPREADINGFACT) {
+		switch (LoRa_SpreadingFactor) {
+			case LORA_SF5:
+				return 0;
+			case LORA_SF6:
+				return 1;
+			case LORA_SF7:
+				return 2;
+			case LORA_SF8:
+				return 3;
+			case LORA_SF9:
+				return 4;
+			case LORA_SF10:
+				return 5;
+			case LORA_SF11:
+				return 6;
+			case LORA_SF12:
+				return 7;
+		}
+	}
+	else if (param==LORA_CONF_CODERATE) {
+		switch (LoRa_CodeRate) {
+			case LORA_CR_4_5:
+				return 0;
+			case LORA_CR_4_6:
+				return 1;
+			case LORA_CR_4_7:
+				return 2;
+			case LORA_CR_4_8:
+				return 3;
+		}
+	}
+	else if (param==LORA_CONF_OPTIM) {
+		switch (LoRa_Optimisation) {
+			case LDRO_OFF:
+				return 0;
+			case LDRO_ON:
+				return 1;
+			case LDRO_AUTO:
+				return 2;
+		}
+	}
+	return -1;
 }
 
 void* loraconf_config(const void* param) {
@@ -293,5 +354,7 @@ void* loraconf_config(const void* param) {
 	else if ((uint32_t)param==LORA_CONF_OFFSET) LoRa_Offset=(uint32_t)(menu_numinput(3,0,LoRa_Offset,"Hz"));
 	else if (((uint8_t*)(&param))[0]==LORA_CONF_BANDWIDTH) LoRa_Bandwidth=((uint8_t*)(&param))[1];
 	else if (((uint8_t*)(&param))[0]==LORA_CONF_SPREADINGFACT) LoRa_SpreadingFactor=((uint8_t*)(&param))[1];
+	else if (((uint8_t*)(&param))[0]==LORA_CONF_CODERATE) LoRa_CodeRate=((uint8_t*)(&param))[1];
+	else if ((uint32_t)param==LORA_CONF_TXPOWER) LoRa_TXpower=menu_rangeinput(-9,22,1,LoRa_TXpower,"dBm");
 	return NULL;
 }

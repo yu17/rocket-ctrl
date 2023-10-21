@@ -2,15 +2,15 @@
 
 //struct menuitem_t *mainmenu;
 
-const struct menu_page_t mainmenu_p={4,mainmenu,0};
-const struct menu_page_t mainmenu_p_3={4,mainmenu_3,0};
-const struct menu_page_t mainmenu_p_3_0={3,mainmenu_3_0,0};
-const struct menu_page_t mainmenu_p_3_0_1={2,mainmenu_3_0_1,0};
-const struct menu_page_t mainmenu_p_3_0_2={2,mainmenu_3_0_2,0};
-const struct menu_page_t mainmenu_p_3_1={3,mainmenu_3_1,0};
-const struct menu_page_t mainmenu_p_3_1_0={2,mainmenu_3_1_0,0};
-const struct menu_page_t mainmenu_p_3_1_1={2,mainmenu_3_1_1,0};
-const struct menu_page_t mainmenu_p_3_1_2={4,mainmenu_3_1_2,0};
+const struct menu_page_t mainmenu_p={4,mainmenu,NULL,0};
+const struct menu_page_t mainmenu_p_3={4,mainmenu_3,NULL,0};
+const struct menu_page_t mainmenu_p_3_0={3,mainmenu_3_0,NULL,0};
+const struct menu_page_t mainmenu_p_3_0_1={2,mainmenu_3_0_1,NULL,0};
+const struct menu_page_t mainmenu_p_3_0_2={2,mainmenu_3_0_2,NULL,0};
+const struct menu_page_t mainmenu_p_3_1={3,mainmenu_3_1,NULL,0};
+const struct menu_page_t mainmenu_p_3_1_0={2,mainmenu_3_1_0,NULL,0};
+const struct menu_page_t mainmenu_p_3_1_1={2,mainmenu_3_1_1,NULL,0};
+const struct menu_page_t mainmenu_p_3_1_2={4,mainmenu_3_1_2,NULL,0};
 
 const struct menu_item_t mainmenu[4]={
 	{

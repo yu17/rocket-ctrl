@@ -38,18 +38,18 @@ extern const struct menu_page_t loraconfmenu_p,
 	loraconfmenu_p_3,
 	loraconfmenu_p_4,
 	loraconfmenu_p_5,
-	loraconfmenu_p_6,
 	loraconfmenu_p_7,
 	loraconfmenu_p_8;
 
 extern const struct menu_item_t loraconfmenu[9],
 	loraconfmenu_2[10],
 	loraconfmenu_3[8],
-	loraconfmenu_4[4];
+	loraconfmenu_4[4],
+	loraconfmenu_5[3];
 
 void* loraconf_enter(const void *param);
 
-uint8_t *loraconf_menumark(uint8_t levels[]);
+int8_t loraconf_menumark(const uint8_t param);
 
 void* loraconf_config(const void* param);
 

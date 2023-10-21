@@ -45,7 +45,7 @@ extern "C" void app_main() {
 	else disp.write(">>> PRGSW LOW\n");
 	disp.display();
 	// BME280
-	bme280_init();
+	bmp280_init();
 	// Compass
 	compass_init();
 	// Battery Voltage
