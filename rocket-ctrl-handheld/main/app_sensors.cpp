@@ -18,7 +18,6 @@ void *app_sensors(const void *param) {
     // 1 + (2 * T_ovs) + (2 * P_ovs + 0.5)
     // T_ovs = 2
     // P_ovs = 16
-    int TICKSAMPLE = 100;
 
 	while (1) {
 		if (!TICK%90) {
@@ -64,6 +63,7 @@ void *app_sensors(const void *param) {
 			}
 		}
 		joy=joy_read(0);
+		Serial.println(page);
 		switch (joy) {
 			case U:
 				if (page>0) page--;
@@ -77,7 +77,7 @@ void *app_sensors(const void *param) {
 				break;
 		}
 		TICK++;
-		delay(TICKSAMPLE);
+		delay(TICKINT);
 	}
 	BMP280.setSampling(Adafruit_BMP280::BMP280_MODE_SLEEP,
                     Adafruit_BMP280::BMP280_SAMPLING_NONE,

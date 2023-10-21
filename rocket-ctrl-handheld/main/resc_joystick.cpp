@@ -31,7 +31,7 @@ enum JOY_DISCRETE joy_read(uint8_t pollint) {
 		btn=digitalRead(JOY_BTN);
 		if (ud>JOY_UD_up_threshold && ud<JOY_UD_down_threshold && lr>JOY_LR_left_threshold && lr<JOY_LR_right_threshold
 			&& btn==HIGH && digitalRead(PRGSW_PIN)==PRGSW_def) break;
-		delay(pollint);
+		if (pollint) delay(pollint);
 	}
 	PRGSW_act=1;
 	while (1) {
