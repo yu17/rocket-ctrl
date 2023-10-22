@@ -7,6 +7,7 @@ void *app_sensors(const void *param) {
 	int heading_ccw;
 	int16_t rawx,rawy,rawz,rawt;
 	uint8_t page=0;
+	bool force_refresh=0;
 
 	// Config sensor
 	BMP280.setSampling(Adafruit_BMP280::BMP280_MODE_NORMAL,
@@ -20,7 +21,8 @@ void *app_sensors(const void *param) {
     // P_ovs = 16
 
 	while (1) {
-		if (!TICK%90) {
+		if (!TICK%20 || force_refresh) {
+			force_refresh=0;
 			if (page==0) {
 				heading_ccw=(compass.readHeading()+compass_offset)%360;
 				disp.clearDisplay();
@@ -66,10 +68,16 @@ void *app_sensors(const void *param) {
 		Serial.println(page);
 		switch (joy) {
 			case U:
-				if (page>0) page--;
+				if (page>0) {
+					page--;
+					force_refresh=1;
+				}
 				break;
 			case D:
-				if (page<1) page++;
+				if (page<1) {
+					page++;
+					force_refresh=1;
+				}
 				break;
 			case L:
 				return NULL;

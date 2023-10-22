@@ -13,6 +13,17 @@
 #define LORA_CONF_CODERATE 0x05
 #define LORA_CONF_OPTIM 0x06
 #define LORA_CONF_TXPOWER 0x07
+#define LORA_CONF_PRESETS 0x08
+
+#define LORA_CONF_PRESET_SHORT_FAST 0x10
+#define LORA_CONF_PRESET_SHORT_SLOW 0x11
+#define LORA_CONF_PRESET_MEDIUM_FAST 0x12
+#define LORA_CONF_PRESET_MEDIUM_SLOW 0x13
+#define LORA_CONF_PRESET_LONG_FAST 0x14
+#define LORA_CONF_PRESET_LONG_MODERATE 0x15
+#define LORA_CONF_PRESET_LONG_SLOW 0x16
+#define LORA_CONF_PRESET_VERYLONG_SLOW 0x17
+
 
 // ----- LoRa -----
 #define LORA_DEVICE DEVICE_SX1262
@@ -34,18 +45,20 @@ extern uint8_t *PacketBuffer[255];
 
 // ----- LoRa configuration menu -----
 extern const struct menu_page_t loraconfmenu_p,
-	loraconfmenu_p_2,
-	loraconfmenu_p_3,
-	loraconfmenu_p_4,
-	loraconfmenu_p_5,
-	loraconfmenu_p_7,
-	loraconfmenu_p_8;
+	loraconfmenu_p_bandwidth,
+	loraconfmenu_p_sf,
+	loraconfmenu_p_cr,
+	loraconfmenu_p_optim,
+	loraconfmenu_p_presets;
 
-extern const struct menu_item_t loraconfmenu[9],
-	loraconfmenu_2[10],
-	loraconfmenu_3[8],
-	loraconfmenu_4[4],
-	loraconfmenu_5[3];
+extern const struct menu_item_t loraconfmenu[8],
+	loraconfmenu_bandwidth[10],
+	loraconfmenu_sf[8],
+	loraconfmenu_cr[4],
+	loraconfmenu_optim[3],
+	loraconfmenu_presets[8];
+
+uint8_t lora_init();
 
 void* loraconf_enter(const void *param);
 

@@ -58,12 +58,7 @@ extern "C" void app_main() {
 	// Joystick
 	pinMode(JOY_BTN,INPUT_PULLUP);
 	// LoRa -- initialization
-	disp.display();
-	SPI.begin(SCK_LoRa,MISO_LoRa,MOSI_LoRa,SS_LoRa);
-	while (!LoRa.begin(SS_LoRa,RST_LoRa,BUSY_LoRa,DIO1_LoRa,SW_LoRa,DEVICE_SX1262)) delay(2000);
-	LoRa.setupLoRa(LoRa_Freq, LoRa_Offset, LoRa_SpreadingFactor, LoRa_Bandwidth, LoRa_CodeRate, LoRa_Optimisation);
-	disp.write(">>> LoRa online\n");
-	disp.display();
+	lora_init();
 	delay(500);
 	disp.clearDisplay();
 	disp.display();

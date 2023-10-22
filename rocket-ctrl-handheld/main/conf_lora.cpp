@@ -2,9 +2,9 @@
 
 uint32_t LoRa_Freq = 915000000;				//frequency of transmissions in hertz
 uint32_t LoRa_Offset = 0;					//offset frequency for calibration purposes
-uint8_t LoRa_Bandwidth = LORA_BW_125;		//LoRa bandwidth
-uint8_t LoRa_SpreadingFactor = LORA_SF7;	//LoRa spreading factor
-uint8_t LoRa_CodeRate = LORA_CR_4_5;		//LoRa coding rate
+uint8_t LoRa_Bandwidth = LORA_BW_250;		//LoRa bandwidth
+uint8_t LoRa_SpreadingFactor = LORA_SF11;	//LoRa spreading factor
+uint8_t LoRa_CodeRate = LORA_CR_4_8;		//LoRa coding rate
 uint8_t LoRa_Optimisation = LDRO_AUTO;		//low data rate optimisation setting, normally set to auto
 int8_t LoRa_TXpower = 22;					//LoRa transmit power in dBm;for SX1262, SX1268 power range is +22dBm to -9dBm
 
@@ -15,18 +15,14 @@ uint8_t PacketLen;
 uint8_t PacketID;
 uint8_t *PacketBuffer[255];
 
-void* loraconf_enter(const void *param) {menu_exec(&loraconfmenu_p);return NULL;}
+const struct menu_page_t loraconfmenu_p={8,loraconfmenu,NULL,0};
+const struct menu_page_t loraconfmenu_p_bandwidth={10,loraconfmenu_bandwidth,&loraconf_menumark,LORA_CONF_BANDWIDTH};
+const struct menu_page_t loraconfmenu_p_sf={8,loraconfmenu_sf,&loraconf_menumark,LORA_CONF_SPREADINGFACT};
+const struct menu_page_t loraconfmenu_p_cr={4,loraconfmenu_cr,&loraconf_menumark,LORA_CONF_CODERATE};
+const struct menu_page_t loraconfmenu_p_optim={3,loraconfmenu_optim,&loraconf_menumark,LORA_CONF_OPTIM};
+const struct menu_page_t loraconfmenu_p_presets={8,loraconfmenu_presets,&loraconf_menumark,LORA_CONF_PRESETS};
 
-const struct menu_page_t loraconfmenu_p={9,loraconfmenu,NULL,0};
-const struct menu_page_t loraconfmenu_p_2={10,loraconfmenu_2,&loraconf_menumark,LORA_CONF_BANDWIDTH};
-const struct menu_page_t loraconfmenu_p_3={8,loraconfmenu_3,&loraconf_menumark,LORA_CONF_SPREADINGFACT};
-const struct menu_page_t loraconfmenu_p_4={4,loraconfmenu_4,&loraconf_menumark,LORA_CONF_CODERATE};
-const struct menu_page_t loraconfmenu_p_5={3,loraconfmenu_5,&loraconf_menumark,LORA_CONF_OPTIM};
-const struct menu_page_t loraconfmenu_p_6={4,loraconfmenu_4,NULL,0};
-const struct menu_page_t loraconfmenu_p_7={4,loraconfmenu_4,NULL,0};
-const struct menu_page_t loraconfmenu_p_8={4,loraconfmenu_4,NULL,0};
-
-const struct menu_item_t loraconfmenu[9]={
+const struct menu_item_t loraconfmenu[8]={
 	{
 		.desc="Frequency",
 		.enter_behavior=1,
@@ -45,28 +41,28 @@ const struct menu_item_t loraconfmenu[9]={
 		.desc="Bandwidth",
 		.enter_behavior=0,
 		.drop_menu=0,
-		.routine={.page=&loraconfmenu_p_2},
+		.routine={.page=&loraconfmenu_p_bandwidth},
 		.param=NULL
 	},
 	{
 		.desc="SpreadingF",
 		.enter_behavior=0,
 		.drop_menu=0,
-		.routine={.page=&loraconfmenu_p_3},
+		.routine={.page=&loraconfmenu_p_sf},
 		.param=NULL
 	},
 	{
 		.desc="CodingRate",
 		.enter_behavior=0,
 		.drop_menu=0,
-		.routine={.page=&loraconfmenu_p_4},
+		.routine={.page=&loraconfmenu_p_cr},
 		.param=NULL
 	},
 	{
 		.desc="Optimise",
 		.enter_behavior=0,
 		.drop_menu=0,
-		.routine={.page=&loraconfmenu_p_5},
+		.routine={.page=&loraconfmenu_p_optim},
 		.param=NULL
 	},
 	{
@@ -77,22 +73,15 @@ const struct menu_item_t loraconfmenu[9]={
 		.param=(void*)LORA_CONF_TXPOWER
 	},
 	{
-		.desc="Reset",
+		.desc="Presets",
 		.enter_behavior=0,
 		.drop_menu=0,
-		.routine={.page=&loraconfmenu_p_7},
-		.param=NULL
-	},
-	{
-		.desc="Apply",
-		.enter_behavior=0,
-		.drop_menu=0,
-		.routine={.page=&loraconfmenu_p_8},
+		.routine={.page=&loraconfmenu_p_presets},
 		.param=NULL
 	}
 };
 
-const struct menu_item_t loraconfmenu_2[10]={
+const struct menu_item_t loraconfmenu_bandwidth[10]={
 	{
 		.desc="7810Hz",
 		.enter_behavior=2,
@@ -165,7 +154,7 @@ const struct menu_item_t loraconfmenu_2[10]={
 	}
 };
 
-const struct menu_item_t loraconfmenu_3[8]={
+const struct menu_item_t loraconfmenu_sf[8]={
 	{
 		.desc="2^5",
 		.enter_behavior=2,
@@ -224,7 +213,7 @@ const struct menu_item_t loraconfmenu_3[8]={
 	}
 };
 
-const struct menu_item_t loraconfmenu_4[4]={
+const struct menu_item_t loraconfmenu_cr[4]={
 	{
 		.desc="4/5",
 		.enter_behavior=2,
@@ -255,7 +244,7 @@ const struct menu_item_t loraconfmenu_4[4]={
 	}
 };
 
-const struct menu_item_t loraconfmenu_5[3]={
+const struct menu_item_t loraconfmenu_optim[3]={
 	{
 		.desc="Off",
 		.enter_behavior=2,
@@ -278,6 +267,81 @@ const struct menu_item_t loraconfmenu_5[3]={
 		.param=(void*)(LORA_CONF_OPTIM+(LDRO_AUTO<<8))
 	}
 };
+
+const struct menu_item_t loraconfmenu_presets[8]={
+	{
+		.desc="ShortFast",
+		.enter_behavior=2,
+		.drop_menu=0,
+		.routine={.func=&loraconf_config},
+		.param=(void*)(LORA_CONF_PRESETS+(LORA_CONF_PRESET_SHORT_FAST<<8))
+	},
+	{
+		.desc="ShortSlow",
+		.enter_behavior=2,
+		.drop_menu=0,
+		.routine={.func=&loraconf_config},
+		.param=(void*)(LORA_CONF_PRESETS+(LORA_CONF_PRESET_SHORT_SLOW<<8))
+	},
+	{
+		.desc="MedmFast",
+		.enter_behavior=2,
+		.drop_menu=0,
+		.routine={.func=&loraconf_config},
+		.param=(void*)(LORA_CONF_PRESETS+(LORA_CONF_PRESET_MEDIUM_FAST<<8))
+	},
+	{
+		.desc="MedmSlow",
+		.enter_behavior=2,
+		.drop_menu=0,
+		.routine={.func=&loraconf_config},
+		.param=(void*)(LORA_CONF_PRESETS+(LORA_CONF_PRESET_MEDIUM_SLOW<<8))
+	},
+	{
+		.desc="LongFast",
+		.enter_behavior=2,
+		.drop_menu=0,
+		.routine={.func=&loraconf_config},
+		.param=(void*)(LORA_CONF_PRESETS+(LORA_CONF_PRESET_LONG_FAST<<8))
+	},
+	{
+		.desc="LongMedm",
+		.enter_behavior=2,
+		.drop_menu=0,
+		.routine={.func=&loraconf_config},
+		.param=(void*)(LORA_CONF_PRESETS+(LORA_CONF_PRESET_LONG_MODERATE<<8))
+	},
+	{
+		.desc="LongSlow",
+		.enter_behavior=2,
+		.drop_menu=0,
+		.routine={.func=&loraconf_config},
+		.param=(void*)(LORA_CONF_PRESETS+(LORA_CONF_PRESET_LONG_SLOW<<8))
+	},
+	{
+		.desc="VeryLong",
+		.enter_behavior=2,
+		.drop_menu=0,
+		.routine={.func=&loraconf_config},
+		.param=(void*)(LORA_CONF_PRESETS+(LORA_CONF_PRESET_VERYLONG_SLOW<<8))
+	}
+};
+
+uint8_t lora_init() {
+	SPI.begin(SCK_LoRa,MISO_LoRa,MOSI_LoRa,SS_LoRa);
+	while (!LoRa.begin(SS_LoRa,RST_LoRa,BUSY_LoRa,DIO1_LoRa,SW_LoRa,DEVICE_SX1262)) delay(2000);
+	LoRa.setupLoRa(LoRa_Freq, LoRa_Offset, LoRa_SpreadingFactor, LoRa_Bandwidth, LoRa_CodeRate, LoRa_Optimisation);
+	disp.write(">>> LoRa online\n");
+	disp.display();
+	return 0;
+}
+
+void* loraconf_enter(const void *param) {
+	menu_exec(&loraconfmenu_p);
+	// Apply settings after the configuration menu returns
+	LoRa.setupLoRa(LoRa_Freq, LoRa_Offset, LoRa_SpreadingFactor, LoRa_Bandwidth, LoRa_CodeRate, LoRa_Optimisation);
+	return NULL;
+}
 
 int8_t loraconf_menumark(const uint8_t param) {
 	if (param==LORA_CONF_BANDWIDTH) {
@@ -346,6 +410,17 @@ int8_t loraconf_menumark(const uint8_t param) {
 				return 2;
 		}
 	}
+	else if (param==LORA_CONF_PRESETS)
+		if (LoRa_CodeRate==LORA_CR_4_8) {
+			if (LoRa_SpreadingFactor==LORA_SF7 && LoRa_Bandwidth==LORA_BW_500) return 0;
+			else if (LoRa_SpreadingFactor==LORA_SF8 && LoRa_Bandwidth==LORA_BW_500) return 1;
+			else if (LoRa_SpreadingFactor==LORA_SF9 && LoRa_Bandwidth==LORA_BW_250) return 2;
+			else if (LoRa_SpreadingFactor==LORA_SF10 && LoRa_Bandwidth==LORA_BW_250) return 3;
+			else if (LoRa_SpreadingFactor==LORA_SF11 && LoRa_Bandwidth==LORA_BW_250) return 4;
+			else if (LoRa_SpreadingFactor==LORA_SF11 && LoRa_Bandwidth==LORA_BW_125) return 5;
+			else if (LoRa_SpreadingFactor==LORA_SF12 && LoRa_Bandwidth==LORA_BW_125) return 6;
+			else if (LoRa_SpreadingFactor==LORA_SF12 && LoRa_Bandwidth==LORA_BW_062) return 7;
+		}
 	return -1;
 }
 
@@ -355,6 +430,52 @@ void* loraconf_config(const void* param) {
 	else if (((uint8_t*)(&param))[0]==LORA_CONF_BANDWIDTH) LoRa_Bandwidth=((uint8_t*)(&param))[1];
 	else if (((uint8_t*)(&param))[0]==LORA_CONF_SPREADINGFACT) LoRa_SpreadingFactor=((uint8_t*)(&param))[1];
 	else if (((uint8_t*)(&param))[0]==LORA_CONF_CODERATE) LoRa_CodeRate=((uint8_t*)(&param))[1];
+	else if (((uint8_t*)(&param))[0]==LORA_CONF_OPTIM) LoRa_Optimisation=((uint8_t*)(&param))[1];
 	else if ((uint32_t)param==LORA_CONF_TXPOWER) LoRa_TXpower=menu_rangeinput(-9,22,1,LoRa_TXpower,"dBm");
+	else if (((uint8_t*)(&param))[0]==LORA_CONF_PRESETS) {
+		switch (((uint8_t*)(&param))[1]) {
+			case LORA_CONF_PRESET_SHORT_FAST:
+				LoRa_Bandwidth=LORA_BW_500;
+				LoRa_SpreadingFactor=LORA_SF7;
+				LoRa_CodeRate=LORA_CR_4_8;
+				break;
+			case LORA_CONF_PRESET_SHORT_SLOW:
+				LoRa_Bandwidth=LORA_BW_500;
+				LoRa_SpreadingFactor=LORA_SF8;
+				LoRa_CodeRate=LORA_CR_4_8;
+				break;
+			case LORA_CONF_PRESET_MEDIUM_FAST:
+				LoRa_Bandwidth=LORA_BW_250;
+				LoRa_SpreadingFactor=LORA_SF9;
+				LoRa_CodeRate=LORA_CR_4_8;
+				break;
+			case LORA_CONF_PRESET_MEDIUM_SLOW:
+				LoRa_Bandwidth=LORA_BW_250;
+				LoRa_SpreadingFactor=LORA_SF10;
+				LoRa_CodeRate=LORA_CR_4_8;
+				break;
+			case LORA_CONF_PRESET_LONG_FAST:
+			default:
+				LoRa_Bandwidth=LORA_BW_250;
+				LoRa_SpreadingFactor=LORA_SF11;
+				LoRa_CodeRate=LORA_CR_4_8;
+				break;
+			case LORA_CONF_PRESET_LONG_MODERATE:
+				LoRa_Bandwidth=LORA_BW_125;
+				LoRa_SpreadingFactor=LORA_SF11;
+				LoRa_CodeRate=LORA_CR_4_8;
+				break;
+			case LORA_CONF_PRESET_LONG_SLOW:
+				LoRa_Bandwidth=LORA_BW_125;
+				LoRa_SpreadingFactor=LORA_SF12;
+				LoRa_CodeRate=LORA_CR_4_8;
+				break;
+			case LORA_CONF_PRESET_VERYLONG_SLOW:
+				LoRa_Bandwidth=LORA_BW_062;
+				LoRa_SpreadingFactor=LORA_SF12;
+				LoRa_CodeRate=LORA_CR_4_8;
+				break;
+		}
+	}
 	return NULL;
 }
