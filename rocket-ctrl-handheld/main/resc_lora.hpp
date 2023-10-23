@@ -1,5 +1,5 @@
-#ifndef conf_lora
-#define conf_lora 1.0
+#ifndef resc_lora
+#define resc_lora 3.0
 
 #include <SPI.h>
 #include <SX126XLT.h>
@@ -42,6 +42,9 @@ extern int8_t PacketSNR;
 extern uint8_t PacketLen;
 extern uint8_t PacketID;
 extern uint8_t *PacketBuffer[255];
+
+// ----- Custom 16-bit Device ID -----
+extern uint16_t DEVID;
 
 // ----- LoRa configuration menu -----
 extern const struct menu_page_t loraconfmenu_p,

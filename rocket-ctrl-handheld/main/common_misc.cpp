@@ -2,7 +2,7 @@
 
 TwoWire I2C2=TwoWire(1);
 
-uint8_t TICK;
+uint16_t TICK;
 char buffer[BUFFER_SIZE];
 uint8_t buffer_pt;
 
@@ -10,6 +10,10 @@ uint8_t buffer_pt;
 TaskHandle_t Task_batvolt;
 bool batvolt_flag_enabled;
 float batvolt_value;
+
+// ----- Animation Handle -----
+uint8_t animation_running=0;
+TaskHandle_t Task_animation;
 
 // ----- battery voltage background functions -----
 void func_batvolt_update(void *param) {
@@ -70,7 +74,7 @@ void *func_quick_settings(const void *param) {
 	if ((uint32_t)param==SYS_GPS_1_1) digitalWrite(Vext,LOW);
 	else if ((uint32_t)param==SYS_GPS_1_2) digitalWrite(Vext,HIGH);
 	else if ((uint32_t)param==SYS_GPS_2_1 && !GPS_bg_runflag) {
-		xTaskCreatePinnedToCore(func_GPS_update,"GPS Parse",100000,NULL,0,&Task_GPS,0);
+		xTaskCreate(func_GPS_update,"GPS Parse",8000,NULL,0,&Task_GPS);
 		GPS_bg_runflag=true;
 	}
 	else if ((uint32_t)param==SYS_GPS_2_2 && GPS_bg_runflag) {
@@ -78,7 +82,7 @@ void *func_quick_settings(const void *param) {
 		GPS_bg_runflag=false;
 	}
 	else if ((uint32_t)param==SYS_VOLT_1 && !batvolt_flag_enabled) {
-		xTaskCreate(func_batvolt_update,"Battery Voltage",10000,NULL,0,&Task_batvolt);
+		xTaskCreate(func_batvolt_update,"Battery Voltage",2000,NULL,0,&Task_batvolt);
 		batvolt_flag_enabled=true;
 	}
 	else if ((uint32_t)param==SYS_VOLT_2 && batvolt_flag_enabled) {
@@ -97,4 +101,56 @@ void *func_deepsleep(const void *param) {
 //	rtc_gpio_deinit(GPIO_NUM_0);
 //	pinMode(PRGSW_PIN,INPUT);
 //	digitalWrite(Vext,LOW);
+}
+
+void func_animation_hline_worker(void *param){
+	uint16_t *lineparam=(uint16_t*)param;
+	if (lineparam[3])
+		disp.fillRect(0,lineparam[0],DISPLAY_WIDTH,lineparam[1],SSD1306_INVERSE);
+		//for (uint16_t i=lineparam[0];i<lineparam[0]+lineparam[1];i++) disp.drawFastHLine(0,i,DISPLAY_WIDTH,SSD1306_INVERSE);
+	disp.display();
+	if (lineparam[2]) {
+		uint16_t framecount=lineparam[2]/20;
+		uint16_t framewidth=(128/framecount)+1;
+		for (uint16_t i=0;i<DISPLAY_WIDTH && animation_running;i+=framewidth) {
+			for (uint16_t j=0;j<framewidth && i+j<DISPLAY_WIDTH;j++) 
+				disp.drawFastVLine(i+j,lineparam[0],lineparam[1],SSD1306_INVERSE);
+			disp.display();
+			delay(20);
+		}
+	}
+	else {
+		uint16_t frameleft=0;
+		uint16_t frameright=24;
+		//for (uint16_t i=lineparam[0];i<lineparam[0]+lineparam[1];i++) disp.drawFastHLine(0,i,24,SSD1306_INVERSE);
+		disp.fillRect(0,lineparam[0],24,lineparam[1],SSD1306_INVERSE);
+		disp.display();
+		while (animation_running) {
+			Serial.print("=");
+			for (uint16_t i=frameleft;i<(frameleft+4)%128;i++) disp.drawFastVLine(i,lineparam[0],lineparam[1],SSD1306_INVERSE);
+			for (uint16_t i=frameright;i<(frameright+4)%128;i++) disp.drawFastVLine(i,lineparam[0],lineparam[1],SSD1306_INVERSE);
+			disp.display();
+			frameleft=(frameleft+4)%128;
+			frameright=(frameright+4)%128;
+			delay(20);
+		}
+	}
+	free(lineparam);
+	animation_running=0;
+	disp.display();
+	vTaskDelete(Task_animation);
+}
+
+// Draw horizontal animation async for duration ms
+void func_animation_hline(uint16_t y, uint16_t h, uint16_t duration, uint16_t inverted, uint8_t command) {
+	if (command==ANIME_START && !animation_running) {
+		animation_running=1;
+		uint16_t *lineparam=(uint16_t *)malloc(sizeof(uint16_t)*4);
+		lineparam[0]=y;
+		lineparam[1]=h;
+		lineparam[2]=duration;
+		lineparam[3]=inverted;
+		xTaskCreatePinnedToCore(&func_animation_hline_worker,"Animation_HLine",4000,lineparam,0,&Task_animation,0);
+	}
+	else if (command==ANIME_INTERRUPT) animation_running=0;
 }

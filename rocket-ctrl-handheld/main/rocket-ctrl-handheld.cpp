@@ -7,7 +7,7 @@
 #include <Adafruit_Sensor.h>
 #include <Adafruit_BME280.h>
 
-#include "conf_lora.hpp"
+#include "resc_lora.hpp"
 #include "resc_display.hpp"
 //#include "resc_keyboard.h"
 #include "resc_joystick.hpp"
@@ -49,7 +49,7 @@ extern "C" void app_main() {
 	// Compass
 	compass_init();
 	// Battery Voltage
-	xTaskCreate(func_batvolt_update,"Battery Voltage",10000,NULL,0,&Task_batvolt);
+	xTaskCreate(func_batvolt_update,"Battery Voltage",2000,NULL,0,&Task_batvolt);
 	batvolt_flag_enabled=true;
 	// Serial/GPS -- Todo: GPS module communication
 	GPS_init();

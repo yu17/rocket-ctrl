@@ -65,7 +65,6 @@ void *app_sensors(const void *param) {
 			}
 		}
 		joy=joy_read(0);
-		Serial.println(page);
 		switch (joy) {
 			case U:
 				if (page>0) {
@@ -80,6 +79,11 @@ void *app_sensors(const void *param) {
 				}
 				break;
 			case L:
+				BMP280.setSampling(Adafruit_BMP280::BMP280_MODE_SLEEP,
+                    Adafruit_BMP280::BMP280_SAMPLING_NONE,
+                    Adafruit_BMP280::BMP280_SAMPLING_NONE,
+                    Adafruit_BMP280::BMP280_FILTER_OFF,
+                    Adafruit_BMP280::BMP280_STANDBY_MS_4000);
 				return NULL;
 			default:
 				break;

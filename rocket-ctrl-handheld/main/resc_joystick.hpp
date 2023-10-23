@@ -1,5 +1,5 @@
 #ifndef resc_joystick
-#define resc_joystick 1.0
+#define resc_joystick 1.2
 
 #include <Arduino.h>
 #include "resc_display.hpp"

@@ -3,7 +3,7 @@
  */
 
 #ifndef common_menu
-#define common_menu 1.0
+#define common_menu 2.0
 
 #include "resc_display.hpp"
 #include "resc_joystick.hpp"
@@ -37,6 +37,8 @@ struct menu_stack_t{
 };
 
 void menu_render(struct menu_page_t *page, uint8_t id, uint8_t pos, uint8_t scale);
+
+void menu_render_animation(uint8_t pos, uint8_t scale, uint8_t speed);
 
 uint8_t menu_exec(const struct menu_page_t *page);
 

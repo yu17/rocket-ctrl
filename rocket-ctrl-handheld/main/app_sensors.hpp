@@ -1,5 +1,5 @@
 #ifndef app_sensorsc
-#define app_sensorsc 1.0
+#define app_sensorsc 2.1
 
 #include "common_misc.hpp"
 #include "resc_joystick.hpp"

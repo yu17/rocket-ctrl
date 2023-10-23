@@ -31,6 +31,11 @@
 #define SYS_TEMP_1 0x02
 #define SYS_TEMP_2 0x03
 
+// ----- Animation Command -----
+#define ANIME_START 0xB0
+#define ANIME_PROGRESS 0xB1
+#define ANIME_INTERRUPT 0xB2
+
 // ----- Secondary I2C -----
 #define I2C2_SDA 33
 #define I2C2_SCL 34
@@ -41,7 +46,7 @@
 
 extern TwoWire I2C2;
 
-extern uint8_t TICK;
+extern uint16_t TICK;
 extern char buffer[BUFFER_SIZE];
 extern uint8_t buffer_pt;
 
@@ -50,6 +55,10 @@ extern TaskHandle_t Task_batvolt;
 extern bool batvolt_flag_enabled;
 extern float batvolt_value;
 
+// ----- Animation Handle -----
+extern uint8_t animation_running;
+extern TaskHandle_t Task_animation;
+
 void func_batvolt_update(void *param);
 
 void *func_setbrightness(const void *param);
@@ -57,5 +66,10 @@ void *func_setbrightness(const void *param);
 void *func_quick_settings(const void *param);
 
 void *func_deepsleep(const void *param);
+
+void func_animation_hline_worker(void *param);
+void func_animation_hline(uint16_t y, uint16_t h, uint16_t duration, uint16_t inverted, uint8_t command);
+
+void func_progress_hline(uint8_t y, uint8_t h, uint8_t command);
 
 #endif

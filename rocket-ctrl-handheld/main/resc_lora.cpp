@@ -1,4 +1,4 @@
-#include "conf_lora.hpp"
+#include "resc_lora.hpp"
 
 uint32_t LoRa_Freq = 915000000;				//frequency of transmissions in hertz
 uint32_t LoRa_Offset = 0;					//offset frequency for calibration purposes
@@ -327,10 +327,15 @@ const struct menu_item_t loraconfmenu_presets[8]={
 	}
 };
 
+uint16_t DEVID;
+
 uint8_t lora_init() {
 	SPI.begin(SCK_LoRa,MISO_LoRa,MOSI_LoRa,SS_LoRa);
 	while (!LoRa.begin(SS_LoRa,RST_LoRa,BUSY_LoRa,DIO1_LoRa,SW_LoRa,DEVICE_SX1262)) delay(2000);
 	LoRa.setupLoRa(LoRa_Freq, LoRa_Offset, LoRa_SpreadingFactor, LoRa_Bandwidth, LoRa_CodeRate, LoRa_Optimisation);
+	//uint8_t mac[8];
+	//esp_read_mac(mac,ESP_MAC_BT);
+	DEVID=0xAB12;
 	disp.write(">>> LoRa online\n");
 	disp.display();
 	return 0;

@@ -181,7 +181,7 @@ const struct menu_item_t shipctrlmenu_5[1]={
 };
 
 void* func_tracker_shipctrl_sendcommand(const void* param) {
-	struct packet_frame_t pk_comm;
+	struct packet_frame_t_dep pk_comm;
 	pk_comm.magicnum=LORAGPS_HHLD_HEAD;
 	pk_comm.pid=0;
 	pk_comm.cid=LORAGPS_HANDHELDID;
@@ -197,9 +197,9 @@ void func_tracker_shiplist_update(void *param) {
 	if (!param) return;
 	struct ship_list_t *shiplist=(struct ship_list_t *)param;
 	struct ship_data_t *ship=shiplist->ship;
-	struct packet_frame_t pk_probe;
+	struct packet_frame_t_dep pk_probe;
 	while (1) {
-		PacketLen=LoRa.receive((uint8_t *)&pk_probe, sizeof(struct packet_frame_t), 0, WAIT_RX);
+		PacketLen=LoRa.receive((uint8_t *)&pk_probe, sizeof(struct packet_frame_t_dep), 0, WAIT_RX);
 		PacketRSSI=LoRa.readPacketRSSI();
 		PacketSNR=LoRa.readPacketSNR();
 		PacketID=pk_probe.pid;

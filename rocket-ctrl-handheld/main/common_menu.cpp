@@ -71,12 +71,14 @@ void menu_render(const struct menu_page_t *page, uint8_t id, uint8_t pos, uint8_
 	}
 	//disp.setCursor(0, 8*scale*pos);
 	//disp.write(">");
-	for (uint8_t i=8*scale*pos;i<8*scale*(pos+1);i++) disp.drawFastHLine(0,i,DISPLAY_WIDTH,SSD1306_INVERSE);
+	//for (uint8_t i=8*scale*pos;i<8*scale*(pos+1);i++) disp.drawFastHLine(0,i,DISPLAY_WIDTH,SSD1306_INVERSE);
+	disp.fillRect(0,8*scale*pos,DISPLAY_WIDTH,8*scale,SSD1306_INVERSE);
 	disp.display();
 }
 
 void menu_render_animation(uint8_t pos, uint8_t scale, uint8_t speed) {
-	for (uint8_t i=8*scale*pos;i<8*scale*(pos+1);i++) disp.drawFastHLine(0,i,DISPLAY_WIDTH,SSD1306_INVERSE);
+	//for (uint8_t i=8*scale*pos;i<8*scale*(pos+1);i++) disp.drawFastHLine(0,i,DISPLAY_WIDTH,SSD1306_INVERSE);
+	disp.fillRect(0,8*scale*pos,DISPLAY_WIDTH,8*scale,SSD1306_INVERSE);
 	disp.display();
 	for (uint8_t i=0;i<DISPLAY_WIDTH;i+=speed) {
 		for (uint8_t j=0;j<speed && i+j<DISPLAY_WIDTH;j++) 

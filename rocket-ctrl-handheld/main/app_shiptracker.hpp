@@ -11,7 +11,7 @@
 #include <SX126XLT.h>
 
 #include "common_misc.hpp"
-#include "conf_lora.hpp"
+#include "resc_lora.hpp"
 #include "resc_display.hpp"
 #include "resc_joystick.hpp"
 #include "resc_gps.hpp"
@@ -51,7 +51,7 @@
 #define LORAGPS_CTRL_PARAMLEN 4
 
 // ----- Comm Protocol -----
-struct packet_frame_t{
+struct packet_frame_t_dep{
 	uint8_t magicnum;
 	uint8_t pid;
 	uint16_t cid;

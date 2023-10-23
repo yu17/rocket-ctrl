@@ -10,7 +10,11 @@ bool GPS_bg_runflag;
 void GPS_init() {
 	digitalWrite(Vext,LOW);
 	Serial1.begin(9600,SERIAL_8N1,48,47);
-	xTaskCreatePinnedToCore(func_GPS_update,"GPS Parse",100000,NULL,0,&Task_GPS,0);
+	BaseType_t err=xTaskCreatePinnedToCore(func_GPS_update,"GPS Parse",8000,NULL,0,&Task_GPS,0);
+	if (err!=pdPASS) {
+		disp.write(">>> GPS failure\n");
+		disp.display();
+	}
 	GPS_bg_runflag=true;
 	disp.write(">>> GPS online\n");
 	disp.display();
