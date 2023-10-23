@@ -69,6 +69,4 @@ void *func_deepsleep(const void *param);
 void func_animation_hline_worker(void *param);
 void func_animation_hline(uint16_t y, uint16_t h, uint16_t duration, uint16_t inverted, uint8_t command);
 
-void func_progress_hline(uint8_t y, uint8_t h, uint8_t command);
-
 #endif

@@ -1,7 +1,7 @@
 #include "plugin_gateway.hpp"
 
 int8_t plugin_gateway_request_weather(struct contact_t *device, struct payload_wethrpt_t *wethrpt) {
-	func_animation_hline(64-8,8,11000,0,ANIME_START);
+	func_animation_hline(64-8,8,15000,0,ANIME_START);
 	struct packet_frame_t packet;
 	packet.device_type=LORACOMM_DEVTYP_HANDHELD;
 	packet.source_id=DEVID;
@@ -16,7 +16,6 @@ int8_t plugin_gateway_request_weather(struct contact_t *device, struct payload_w
 	}
 	func_animation_hline(64-8,8,15000,0,ANIME_INTERRUPT);
 	// Clear bottom screen
-	//for (uint8_t i=64-8;i<64;i++) disp.drawFastHLine(0,i,128,SSD1306_BLACK);
 	disp.fillRect(0,64-8,DISPLAY_WIDTH,8,SSD1306_BLACK);
 	disp.display();
 	if (!device->lastpkt_updated) return -1;
@@ -47,7 +46,6 @@ void plugin_gateway_display_weather(struct contact_t *device) {
 				disp.display();
 			}
 			else {
-				//func_animation_hline(128-8,8,11000,0,ANIME_INTERRUPT);
 				disp.clearDisplay();
 				disp.setCursor(6, 0);
 				sprintf(buffer,"Temp  = %.3f%cC",wethrpt.temperature,248);

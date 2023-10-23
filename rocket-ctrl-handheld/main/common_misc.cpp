@@ -114,7 +114,6 @@ void func_animation_hline_worker(void *param){
 	else {
 		uint16_t frameleft=0;
 		uint16_t frameright=24;
-		//for (uint16_t i=lineparam[0];i<lineparam[0]+lineparam[1];i++) disp.drawFastHLine(0,i,24,SSD1306_INVERSE);
 		disp.fillRect(0,lineparam[0],24,lineparam[1],SSD1306_INVERSE);
 		disp.display();
 		while (animation_running) {

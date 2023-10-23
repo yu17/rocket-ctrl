@@ -77,14 +77,14 @@ void menu_render(const struct menu_page_t *page, uint8_t id, uint8_t pos, uint8_
 }
 
 void menu_render_animation(uint8_t pos, uint8_t scale, uint8_t speed) {
-	//for (uint8_t i=8*scale*pos;i<8*scale*(pos+1);i++) disp.drawFastHLine(0,i,DISPLAY_WIDTH,SSD1306_INVERSE);
-	disp.fillRect(0,8*scale*pos,DISPLAY_WIDTH,8*scale,SSD1306_INVERSE);
-	disp.display();
-	for (uint8_t i=0;i<DISPLAY_WIDTH;i+=speed) {
-		for (uint8_t j=0;j<speed && i+j<DISPLAY_WIDTH;j++) 
-			disp.drawFastVLine(i+j,8*scale*pos,8*scale,SSD1306_INVERSE);
-		disp.display();
-	}
+	func_animation_hline(8*scale*pos,8*scale,200,1,ANIME_START);
+//	disp.fillRect(0,8*scale*pos,DISPLAY_WIDTH,8*scale,SSD1306_INVERSE);
+//	disp.display();
+//	for (uint8_t i=0;i<DISPLAY_WIDTH;i+=speed) {
+//		for (uint8_t j=0;j<speed && i+j<DISPLAY_WIDTH;j++) 
+//			disp.drawFastVLine(i+j,8*scale*pos,8*scale,SSD1306_INVERSE);
+//		disp.display();
+//	}
 }
 
 uint8_t menu_exec(const struct menu_page_t *page) {
@@ -120,8 +120,7 @@ uint8_t menu_exec(const struct menu_page_t *page) {
 					id=menu_stack[stackpt].item_id;
 					menu_stack[stackpt].page=NULL;
 					menu_stack[stackpt].item_id=0;
-					if (id==0) pos=0;
-					else pos=1;
+					pos=id==0?0:1;
 				}
 				else {
 					page=NULL;
@@ -143,7 +142,8 @@ uint8_t menu_exec(const struct menu_page_t *page) {
 					stackpt++;
 					page=page->items[id].routine.page;
 					id=0;
-					pos=0;
+					if (page->marking) id=(page->marking)(page->marking_param);
+					pos=id==0?0:1;
 				}
 				break;
 			default:

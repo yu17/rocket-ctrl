@@ -18,6 +18,7 @@
 #define LORACOMM_PKTTYP_ANAK 0x21// Reply to announcement
 #define LORACOMM_PKTTYP_REQ 0x22
 #define LORACOMM_PKTTYP_WETHRPT 0x23
+#define LORACOMM_PKTTYP_LOCRPT 0x24
 
 #define LORACOMM_FRAME_LEN sizeof(uint8_t)+sizeof(uint16_t)*2
 #define LORACOMM_REQ_LEN 4
@@ -60,13 +61,13 @@ struct payload_wethrpt_t{
 	uint32_t gas_r;
 };
 
+struct payload_locrpt_t{
+	double latitude,longitude,altitude;
+};
+
 // ----- pending modifications -----
 struct payload_dat_time_t{
 	uint8_t hour,minute,second;
-};
-
-struct payload_dat_cord_t{
-	double latitude,longitude,altitude;
 };
 
 struct payload_dat_motn_t{
