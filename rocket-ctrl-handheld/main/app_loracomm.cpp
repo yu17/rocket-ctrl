@@ -10,7 +10,7 @@ void func_loracomm_listener(void *param) {
 	while (1) {
 		PacketLen=LoRa.receiveReliable((uint8_t *)&packet, sizeof(struct packet_frame_t), LORACOMM_FISHNET, RX_WAITTIME_MS, WAIT_RX);
 		// Check if the packet has valid device type and is either actually for this device or a broadcast.
-		if (!PacketLen || packet.device_type>LORACOMM_DEVTYP_MAX || packet.device_type<LORACOMM_DEVTYP_MIN || packet.source_id==DEVID || (packet.target_id && packet.target_id!=DEVID)) {delay(10);continue;}
+		if (!PacketLen || packet.device_type>LORACOMM_DEVTYP_MAX || packet.device_type<LORACOMM_DEVTYP_MIN || packet.source_id==DEVID || (packet.target_id && packet.target_id!=DEVID)) continue;
 		// Check if the packet came from a known sender
 		contact=func_contact_list_find(packet.source_id);
 		// Add unknown sender to the head of the contact list
@@ -36,6 +36,7 @@ void func_loracomm_listener(void *param) {
 		contact->lastpkt_RSSI=LoRa.readPacketRSSI();
 		contact->lastpkt_SNR=LoRa.readPacketSNR();
 		memcpy(&(contact->lastpkt_type),&(packet.packet_type),contact->lastpkt_datalen);
+		contact->lastpkt_updated=1;
 	}
 }
 

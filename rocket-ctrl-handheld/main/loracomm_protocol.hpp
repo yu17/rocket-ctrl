@@ -38,6 +38,7 @@ struct contact_t{
 	struct contact_t *prev,*next;
 	uint8_t device_type;
 	uint16_t id;
+	uint8_t lastpkt_updated;
 	uint8_t lastpkt_datalen;
 	int16_t lastpkt_RSSI;
 	int8_t lastpkt_SNR;

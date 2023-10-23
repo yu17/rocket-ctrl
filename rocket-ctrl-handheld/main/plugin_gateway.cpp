@@ -10,16 +10,17 @@ int8_t plugin_gateway_request_weather(struct contact_t *device, struct payload_w
 	packet.payload[0]=LORACOMM_PKTTYP_WETHRPT;
 	LoRa.transmitReliable((uint8_t*)&packet, LORACOMM_FRAME_LEN+sizeof(packet.packet_type)+2, LORACOMM_FISHNET, 0, LoRa_TXpower, WAIT_TX);
 	uint8_t timeout=4;
-	while(device->lastpkt_type!=LORACOMM_PKTTYP_WETHRPT && timeout) {
+	while(!device->lastpkt_updated && timeout) {
 		delay(3000);
 		timeout--;
 	}
-	func_animation_hline(64-8,8,11000,0,ANIME_INTERRUPT);
+	func_animation_hline(64-8,8,15000,0,ANIME_INTERRUPT);
 	// Clear bottom screen
 	//for (uint8_t i=64-8;i<64;i++) disp.drawFastHLine(0,i,128,SSD1306_BLACK);
 	disp.fillRect(0,64-8,DISPLAY_WIDTH,8,SSD1306_BLACK);
 	disp.display();
-	if (device->lastpkt_type!=LORACOMM_PKTTYP_WETHRPT) return -1;
+	if (!device->lastpkt_updated) return -1;
+	device->lastpkt_updated=0;
 	memcpy(wethrpt,device->data,sizeof(struct payload_wethrpt_t));
 	return 0;
 }
@@ -35,11 +36,13 @@ void plugin_gateway_display_weather(struct contact_t *device) {
 	while (1) {
 		if (!(TICK%6000) || force_update) {
 			force_update=0;
+			// Print "Updating" at the bottom
+			disp.fillRect(0,64-8,DISPLAY_WIDTH,8,SSD1306_BLACK);
 			disp.setCursor((128-11*6)/2,64-8);
 			disp.write("Updating...");
 			disp.display();
 			if (plugin_gateway_request_weather(device,&wethrpt)) {
-				disp.setCursor(128-8*6, 64-8);
+				disp.setCursor(128-11*6, 64-8);
 				disp.write("Unreachable");
 				disp.display();
 			}
@@ -91,5 +94,6 @@ void plugin_gateway_display_weather(struct contact_t *device) {
 }
 
 void plugin_gateway_main(struct contact_t *device) {
+	device->lastpkt_updated=0;
 	plugin_gateway_display_weather(device);
 }
