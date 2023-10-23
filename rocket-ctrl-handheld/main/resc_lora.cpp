@@ -24,6 +24,13 @@ const struct menu_page_t loraconfmenu_p_presets={8,loraconfmenu_presets,&loracon
 
 const struct menu_item_t loraconfmenu[8]={
 	{
+		.desc="Presets",
+		.enter_behavior=0,
+		.drop_menu=0,
+		.routine={.page=&loraconfmenu_p_presets},
+		.param=NULL
+	},
+	{
 		.desc="Frequency",
 		.enter_behavior=1,
 		.drop_menu=0,
@@ -71,13 +78,6 @@ const struct menu_item_t loraconfmenu[8]={
 		.drop_menu=0,
 		.routine={.func=&loraconf_config},
 		.param=(void*)LORA_CONF_TXPOWER
-	},
-	{
-		.desc="Presets",
-		.enter_behavior=0,
-		.drop_menu=0,
-		.routine={.page=&loraconfmenu_p_presets},
-		.param=NULL
 	}
 };
 
@@ -332,6 +332,7 @@ uint16_t DEVID;
 uint8_t lora_init() {
 	SPI.begin(SCK_LoRa,MISO_LoRa,MOSI_LoRa,SS_LoRa);
 	while (!LoRa.begin(SS_LoRa,RST_LoRa,BUSY_LoRa,DIO1_LoRa,SW_LoRa,DEVICE_SX1262)) delay(2000);
+	LoRa.resetDevice();
 	LoRa.setupLoRa(LoRa_Freq, LoRa_Offset, LoRa_SpreadingFactor, LoRa_Bandwidth, LoRa_CodeRate, LoRa_Optimisation);
 	//uint8_t mac[8];
 	//esp_read_mac(mac,ESP_MAC_BT);

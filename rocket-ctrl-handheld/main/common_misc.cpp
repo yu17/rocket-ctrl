@@ -7,7 +7,6 @@ char buffer[BUFFER_SIZE];
 uint8_t buffer_pt;
 
 // ----- Battery Voltage -----
-TaskHandle_t Task_batvolt;
 bool batvolt_flag_enabled;
 float batvolt_value;
 
@@ -15,14 +14,9 @@ float batvolt_value;
 uint8_t animation_running=0;
 TaskHandle_t Task_animation;
 
-// ----- battery voltage background functions -----
-void func_batvolt_update(void *param) {
-	int raw;
-	while (1) {
-		raw=analogRead(A0);
-		batvolt_value=(float)raw/(float)4095*3.6*(float)490/(float)100;
-		delay(1000);
-	}
+// ----- battery voltage update functions -----
+void func_batvolt_update() {
+	batvolt_value=((float)analogRead(A0))/(float)4095*3.6*(float)490/(float)100;
 }
 
 void *func_setbrightness(const void *param) {
@@ -82,11 +76,9 @@ void *func_quick_settings(const void *param) {
 		GPS_bg_runflag=false;
 	}
 	else if ((uint32_t)param==SYS_VOLT_1 && !batvolt_flag_enabled) {
-		xTaskCreate(func_batvolt_update,"Battery Voltage",2000,NULL,0,&Task_batvolt);
 		batvolt_flag_enabled=true;
 	}
 	else if ((uint32_t)param==SYS_VOLT_2 && batvolt_flag_enabled) {
-		vTaskDelete(Task_batvolt);
 		batvolt_flag_enabled=false;
 	}
 	return NULL;
@@ -126,7 +118,6 @@ void func_animation_hline_worker(void *param){
 		disp.fillRect(0,lineparam[0],24,lineparam[1],SSD1306_INVERSE);
 		disp.display();
 		while (animation_running) {
-			Serial.print("=");
 			for (uint16_t i=frameleft;i<(frameleft+4)%128;i++) disp.drawFastVLine(i,lineparam[0],lineparam[1],SSD1306_INVERSE);
 			for (uint16_t i=frameright;i<(frameright+4)%128;i++) disp.drawFastVLine(i,lineparam[0],lineparam[1],SSD1306_INVERSE);
 			disp.display();
@@ -138,7 +129,7 @@ void func_animation_hline_worker(void *param){
 	free(lineparam);
 	animation_running=0;
 	disp.display();
-	vTaskDelete(Task_animation);
+	vTaskDelete(NULL);
 }
 
 // Draw horizontal animation async for duration ms
@@ -150,7 +141,8 @@ void func_animation_hline(uint16_t y, uint16_t h, uint16_t duration, uint16_t in
 		lineparam[1]=h;
 		lineparam[2]=duration;
 		lineparam[3]=inverted;
-		xTaskCreatePinnedToCore(&func_animation_hline_worker,"Animation_HLine",4000,lineparam,0,&Task_animation,0);
+		//xTaskCreatePinnedToCore(&func_animation_hline_worker,"Animation_HLine",4000,lineparam,0,&Task_animation,0);
+		xTaskCreate(&func_animation_hline_worker,"Animation_HLine",4000,lineparam,0,&Task_animation);
 	}
 	else if (command==ANIME_INTERRUPT) animation_running=0;
 }

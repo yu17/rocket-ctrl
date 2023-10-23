@@ -6,24 +6,27 @@
 #include "plugin_gateway.hpp"
 #include "loracomm_protocol.hpp"
 
-#define RX_WAITTIME_MS 60000
+#define RX_WAITTIME_MS 0
 
 struct contact_list_t{
 	uint8_t count;
 	struct contact_t *contacts;
 };
 
+extern TaskHandle_t Task_LoRa_listener;
+extern struct contact_list_t contact_list;
+
 void func_loracomm_listener(void *param);
 
-void func_contact_list_render(struct contact_list_t *contact_list, struct contact_t *contact, uint8_t pos, uint8_t scale);
+void func_contact_list_render(struct contact_t *contact, uint8_t pos, uint8_t scale);
 
 void func_loracomm_send_announcement();
 
-void func_loracomm_main(struct contact_list_t *contact_list);
+void func_loracomm_main();
 
-struct contact_t* func_contact_list_find(struct contact_list_t *contact_list, uint16_t id);
+struct contact_t* func_contact_list_find(uint16_t id);
 
-void func_contact_list_destroy(struct contact_list_t *contact_list);
+void func_contact_list_destroy();
 
 void* app_loracomm(const void *param);
 

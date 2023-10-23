@@ -51,7 +51,6 @@ extern char buffer[BUFFER_SIZE];
 extern uint8_t buffer_pt;
 
 // ----- Battery Voltage -----
-extern TaskHandle_t Task_batvolt;
 extern bool batvolt_flag_enabled;
 extern float batvolt_value;
 
@@ -59,7 +58,7 @@ extern float batvolt_value;
 extern uint8_t animation_running;
 extern TaskHandle_t Task_animation;
 
-void func_batvolt_update(void *param);
+void func_batvolt_update();
 
 void *func_setbrightness(const void *param);
 

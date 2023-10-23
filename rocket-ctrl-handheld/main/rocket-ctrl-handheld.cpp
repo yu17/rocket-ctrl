@@ -49,7 +49,7 @@ extern "C" void app_main() {
 	// Compass
 	compass_init();
 	// Battery Voltage
-	xTaskCreate(func_batvolt_update,"Battery Voltage",2000,NULL,0,&Task_batvolt);
+	func_batvolt_update();
 	batvolt_flag_enabled=true;
 	// Serial/GPS -- Todo: GPS module communication
 	GPS_init();
@@ -74,6 +74,7 @@ extern "C" void app_main() {
 			disp.clearDisplay();
 			disp.setTextSize(1);
 			if (batvolt_flag_enabled) {
+				if (!(TICK+5)%1000) func_batvolt_update();
 				disp.setCursor(2, 2);
 				sprintf(buffer,"%.3fV",batvolt_value);
 				disp.write(buffer);
