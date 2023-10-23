@@ -10,8 +10,6 @@
 #include "app_gps.hpp"
 #include "app_sensors.hpp"
 
-//extern struct menuitem_t *mainmenu;
-
 extern const struct menu_page_t mainmenu_p,
     mainmenu_p_settings,
         mainmenu_p_system,
@@ -31,6 +29,8 @@ extern const struct menu_item_t mainmenu[5],
             mainmenu_gps_power[2],
             mainmenu_gps_parser[2],
             mainmenu_gps_freq[4];
+
+int8_t mainmenu_menumark(const uint8_t param);
 
 struct menuitem_t *mainmenu_load(uint8_t levels[]);
 

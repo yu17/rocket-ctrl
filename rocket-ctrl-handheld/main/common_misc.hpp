@@ -44,11 +44,16 @@
 #define TICKINT 10
 #define BUFFER_SIZE 128
 
+// ----- Secondary I2C for temp/pressure sensor -----
 extern TwoWire I2C2;
 
+// ----- Common buffer for text printing -----
 extern uint16_t TICK;
 extern char buffer[BUFFER_SIZE];
 extern uint8_t buffer_pt;
+
+// ----- Vext power flag -----
+extern uint8_t Vext_enabled;
 
 // ----- Battery Voltage -----
 extern bool batvolt_flag_enabled;

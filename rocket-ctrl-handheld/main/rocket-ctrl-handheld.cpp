@@ -25,6 +25,7 @@ extern "C" void app_main() {
 	// Power on Vext
 	pinMode(Vext,OUTPUT);
 	digitalWrite(Vext,LOW);
+	Vext_enabled=1;
 	TICK=0;
 	Serial.begin(115200);
 	// OLED -- initialization

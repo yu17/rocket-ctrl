@@ -10,6 +10,8 @@
 
 int8_t plugin_gateway_request_weather(struct contact_t *device, struct payload_wethrpt_t *wethrpt);
 
+int8_t plugin_gateway_request_location(struct contact_t *device, struct payload_locrpt_t *locrpt);
+
 void plugin_gateway_display_weather(struct contact_t *device);
 
 void plugin_gateway_main(struct contact_t *device);

@@ -1,10 +1,15 @@
 #include "common_misc.hpp"
 
+// ----- Secondary I2C for temp/pressure sensor -----
 TwoWire I2C2=TwoWire(1);
 
+// ----- Common buffer for text printing -----
 uint16_t TICK;
 char buffer[BUFFER_SIZE];
 uint8_t buffer_pt;
+
+// ----- Vext power flag -----
+uint8_t Vext_enabled;
 
 // ----- Battery Voltage -----
 bool batvolt_flag_enabled;
@@ -65,8 +70,14 @@ void *func_setbrightness(const void *param) {
 }
 
 void *func_quick_settings(const void *param) {
-	if ((uint32_t)param==SYS_GPS_1_1) digitalWrite(Vext,LOW);
-	else if ((uint32_t)param==SYS_GPS_1_2) digitalWrite(Vext,HIGH);
+	if ((uint32_t)param==SYS_GPS_1_1) {
+		digitalWrite(Vext,LOW);
+		Vext_enabled=1;
+	}
+	else if ((uint32_t)param==SYS_GPS_1_2) {
+		digitalWrite(Vext,HIGH);
+		Vext_enabled=0;
+	}
 	else if ((uint32_t)param==SYS_GPS_2_1 && !GPS_bg_runflag) {
 		xTaskCreate(func_GPS_update,"GPS Parse",8000,NULL,0,&Task_GPS);
 		GPS_bg_runflag=true;
@@ -90,9 +101,6 @@ void *func_deepsleep(const void *param) {
 	rtc_gpio_pullup_en(GPIO_NUM_0);
 	esp_sleep_enable_ext0_wakeup(GPIO_NUM_0,LOW);
 	esp_deep_sleep_start();
-//	rtc_gpio_deinit(GPIO_NUM_0);
-//	pinMode(PRGSW_PIN,INPUT);
-//	digitalWrite(Vext,LOW);
 }
 
 void func_animation_hline_worker(void *param){

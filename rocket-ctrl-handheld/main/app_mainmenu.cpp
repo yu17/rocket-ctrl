@@ -5,11 +5,11 @@
 const struct menu_page_t mainmenu_p={5,mainmenu,NULL,0};
 const struct menu_page_t mainmenu_p_settings={4,mainmenu_settings,NULL,0};
 const struct menu_page_t mainmenu_p_system={3,mainmenu_system,NULL,0};
-const struct menu_page_t mainmenu_p_batvolt={2,mainmenu_batvolt,NULL,0};
+const struct menu_page_t mainmenu_p_batvolt={2,mainmenu_batvolt,&mainmenu_menumark,SYS_VOLT_1};
 const struct menu_page_t mainmenu_p_chiptemp={2,mainmenu_chiptemp,NULL,0};
 const struct menu_page_t mainmenu_p_gps={3,mainmenu_gps,NULL,0};
-const struct menu_page_t mainmenu_p_gps_power={2,mainmenu_gps_power,NULL,0};
-const struct menu_page_t mainmenu_p_gps_parser={2,mainmenu_gps_parser,NULL,0};
+const struct menu_page_t mainmenu_p_gps_power={2,mainmenu_gps_power,&mainmenu_menumark,SYS_GPS_1_1};
+const struct menu_page_t mainmenu_p_gps_parser={2,mainmenu_gps_parser,&mainmenu_menumark,SYS_GPS_2_1};
 const struct menu_page_t mainmenu_p_gps_freq={4,mainmenu_gps_freq,NULL,0};
 
 const struct menu_item_t mainmenu[5]={
@@ -227,3 +227,16 @@ const struct menu_item_t mainmenu_gps_freq[4]={
 		.param=(void*)SYS_GPS_3_4//&mainmenu_param_3_1_2_3
 	}
 };
+
+int8_t mainmenu_menumark(const uint8_t param) {
+	if (param==SYS_VOLT_1) {
+		return 1-batvolt_flag_enabled;
+	}
+	else if (param==SYS_GPS_1_1) {
+		return 1-Vext_enabled;
+	}
+	else if (param==SYS_GPS_2_1) {
+		return 1-(int8_t)GPS_bg_runflag;
+	}
+	return -1;
+}
