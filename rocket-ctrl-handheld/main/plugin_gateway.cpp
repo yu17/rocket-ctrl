@@ -60,83 +60,85 @@ void plugin_gateway_display_weather(struct contact_t *device) {
 	disp.clearDisplay();
 	disp.display();
 	while (1) {
-		if (!(TICK%6000) || force_update) {
-			force_update=0;
-			// Print "Updating" at the bottom
-			disp.fillRect(0,64-8,DISPLAY_WIDTH,8,SSD1306_BLACK);
-			disp.setCursor((128-11*6)/2,64-8);
-			disp.write("Updating...");
-			disp.display();
-			if (page==0) {
-				if (plugin_gateway_request_weather(device,&wethrpt)) {
-					disp.setCursor(128-11*6, 64-8);
-					disp.write("Unreachable");
-					disp.display();
+		if (!(TICK%10)) {
+			if (!(TICK%6000) || force_update) {
+				force_update=0;
+				// Print "Updating" at the bottom
+				disp.fillRect(0,64-8,DISPLAY_WIDTH,8,SSD1306_BLACK);
+				disp.setCursor((128-11*6)/2,64-8);
+				disp.write("Updating...");
+				disp.display();
+				if (page==0) {
+					if (plugin_gateway_request_weather(device,&wethrpt)) {
+						disp.setCursor(128-11*6, 64-8);
+						disp.write("Unreachable");
+						disp.display();
+					}
 				}
-				else {
-					disp.clearDisplay();
-					disp.setCursor(6, 0);
-					sprintf(buffer,"Temp  = %.3f%cC",wethrpt.temperature,248);
-					disp.write(buffer);
-					disp.setCursor(6, 8);
-					sprintf(buffer,"Pres  = %.2fhPa",wethrpt.pressure/100.0);
-					disp.write(buffer);
-					disp.setCursor(6, 16);
-					sprintf(buffer,"Humid = %.3f%%",wethrpt.humidity);
-					disp.write(buffer);
-					disp.setCursor(6, 24);
-					sprintf(buffer,"Gas = %d",wethrpt.gas_r);
-					disp.write(buffer);
-					disp.setCursor(6, 32);
-					sprintf(buffer,"Est.IAQ = %.3f",log(wethrpt.gas_r)+0.04*wethrpt.humidity);
-					disp.write(buffer);
-					disp.setCursor(0,40);
-					sprintf(buffer,"SNR = %d",device->lastpkt_SNR);
-					disp.write(buffer);
-					disp.setCursor(6*11,40);
-					sprintf(buffer,"RSSI = %d",device->lastpkt_RSSI);
-					disp.write(buffer);
-					disp.display();
+				else if (page==1) {
+					if (plugin_gateway_request_location(device,&locrpt)) {
+						disp.setCursor(128-11*6, 64-8);
+						disp.write("Unreachable");
+						disp.display();
+					}
 				}
 			}
+			if (page==0) {
+				disp.clearDisplay();
+				disp.setCursor(6, 0);
+				sprintf(buffer,"Temp  = %.3f%cC",wethrpt.temperature,248);
+				disp.write(buffer);
+				disp.setCursor(6, 8);
+				sprintf(buffer,"Pres  = %.2fhPa",wethrpt.pressure/100.0);
+				disp.write(buffer);
+				disp.setCursor(6, 16);
+				sprintf(buffer,"Humid = %.3f%%",wethrpt.humidity);
+				disp.write(buffer);
+				disp.setCursor(6, 24);
+				sprintf(buffer,"Gas = %d",wethrpt.gas_r);
+				disp.write(buffer);
+				disp.setCursor(6, 32);
+				sprintf(buffer,"Est.IAQ = %.3f",log(wethrpt.gas_r)+0.04*wethrpt.humidity);
+				disp.write(buffer);
+				disp.setCursor(0,40);
+				sprintf(buffer,"SNR = %d",device->lastpkt_SNR);
+				disp.write(buffer);
+				disp.setCursor(6*11,40);
+				sprintf(buffer,"RSSI = %d",device->lastpkt_RSSI);
+				disp.write(buffer);
+				disp.display();
+			}
 			else if (page==1) {
-				if (plugin_gateway_request_location(device,&locrpt)) {
-					disp.setCursor(128-11*6, 64-8);
-					disp.write("Unreachable");
-					disp.display();
-				}
-				else {
-					disp.clearDisplay();
-					heading_ccw=(compass.readHeading()+compass_offset)%360;
-					disp.setCursor(0, 0);
-					sprintf(buffer,"%02d:%02d:%02d",GPS.time.hour(),GPS.time.minute(),GPS.time.second());
-					disp.write(buffer);
-					disp.setCursor(0, 8);
-					sprintf(buffer,"%9.6f%c",abs(locrpt.latitude),locrpt.latitude<0?'S':'N');
-					disp.write(buffer);
-					disp.setCursor(0, 16);
-					if (abs(locrpt.longitude)>=100) sprintf(buffer,"%9.5f%c",abs(locrpt.longitude),locrpt.longitude<0?'W':'E');
-					else sprintf(buffer,"%9.6f%c",abs(locrpt.longitude),locrpt.longitude<0?'W':'E');
-					disp.write(buffer);
-					disp.setCursor(0, 24);
-					sprintf(buffer,"%.2fm",locrpt.altitude);
-					disp.write(buffer);
-					disp.setCursor(0, 32);
-					sprintf(buffer,"%.2f%c",GPS.courseTo(GPS.location.lat(),GPS.location.lng(),locrpt.latitude,locrpt.longitude),248);
-					disp.write(buffer);
-					disp.setCursor(0, 40);
-					sprintf(buffer,"DIST: %.1f",GPS.distanceBetween(GPS.location.lat(),GPS.location.lng(),locrpt.latitude,locrpt.longitude));
-					disp.write(buffer);
-					disp.setCursor(0, 48);
-					sprintf(buffer,"RSSI: %d",PacketRSSI);
-					disp.write(buffer);
-					disp.setCursor(0, 56);
-					sprintf(buffer,"PKT: %d",PacketID);
-					disp.write(buffer);
-					compass_draw_graph(96,32,30,heading_ccw);
-					compass_draw_arrow(96,32,18,heading_ccw-compass_course_clkflip(GPS.courseTo(GPS.location.lat(),GPS.location.lng(),locrpt.latitude,locrpt.longitude)));
-					disp.display();
-				}
+				disp.clearDisplay();
+				heading_ccw=(compass.readHeading()+compass_offset)%360;
+				disp.setCursor(0, 0);
+				sprintf(buffer,"%02d:%02d:%02d",GPS.time.hour(),GPS.time.minute(),GPS.time.second());
+				disp.write(buffer);
+				disp.setCursor(0, 8);
+				sprintf(buffer,"%9.6f%c",abs(locrpt.latitude),locrpt.latitude<0?'S':'N');
+				disp.write(buffer);
+				disp.setCursor(0, 16);
+				if (abs(locrpt.longitude)>=100) sprintf(buffer,"%9.5f%c",abs(locrpt.longitude),locrpt.longitude<0?'W':'E');
+				else sprintf(buffer,"%9.6f%c",abs(locrpt.longitude),locrpt.longitude<0?'W':'E');
+				disp.write(buffer);
+				disp.setCursor(0, 24);
+				sprintf(buffer,"%.2fm",locrpt.altitude);
+				disp.write(buffer);
+				disp.setCursor(0, 32);
+				sprintf(buffer,"%.2f%c",GPS.courseTo(GPS.location.lat(),GPS.location.lng(),locrpt.latitude,locrpt.longitude),248);
+				disp.write(buffer);
+				disp.setCursor(0, 40);
+				sprintf(buffer,"DIST: %.1f",GPS.distanceBetween(GPS.location.lat(),GPS.location.lng(),locrpt.latitude,locrpt.longitude));
+				disp.write(buffer);
+				disp.setCursor(0, 48);
+				sprintf(buffer,"RSSI: %d",device->lastpkt_RSSI);
+				disp.write(buffer);
+				disp.setCursor(0, 56);
+				sprintf(buffer,"SNR: %d",device->lastpkt_SNR);
+				disp.write(buffer);
+				compass_draw_graph(96,32,30,heading_ccw);
+				compass_draw_arrow(96,32,18,heading_ccw-compass_course_clkflip(GPS.courseTo(GPS.location.lat(),GPS.location.lng(),locrpt.latitude,locrpt.longitude)));
+				disp.display();
 			}
 		}
 		joy=joy_read(0);

@@ -332,7 +332,6 @@ uint16_t DEVID;
 uint8_t lora_init() {
 	SPI.begin(SCK_LoRa,MISO_LoRa,MOSI_LoRa,SS_LoRa);
 	while (!LoRa.begin(SS_LoRa,RST_LoRa,BUSY_LoRa,DIO1_LoRa,SW_LoRa,DEVICE_SX1262)) delay(2000);
-	LoRa.resetDevice();
 	LoRa.setupLoRa(LoRa_Freq, LoRa_Offset, LoRa_SpreadingFactor, LoRa_Bandwidth, LoRa_CodeRate, LoRa_Optimisation);
 	//uint8_t mac[8];
 	//esp_read_mac(mac,ESP_MAC_BT);

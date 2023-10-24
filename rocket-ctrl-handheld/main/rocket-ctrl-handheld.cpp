@@ -71,7 +71,7 @@ extern "C" void app_main() {
 			menu_exec(&mainmenu_p);
 			TICK=0;
 		}
-		if (!TICK%10) {
+		if (!(TICK%10)) {
 			disp.clearDisplay();
 			disp.setTextSize(1);
 			if (batvolt_flag_enabled) {

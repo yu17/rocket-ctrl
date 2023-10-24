@@ -5,7 +5,7 @@ void *app_gps(const void *param) {
 	disp.setTextSize(1);//21 characters per line
 	TICK=0;
 	while (1) {
-		if (!TICK%10) {
+		if (!(TICK%10)) {
 			disp.clearDisplay();
 			disp.setCursor(6, 0+4);
 			sprintf(buffer,"%04d-%02d-%02d %02d:%02d:%02d",GPS.date.year(),GPS.date.month(),GPS.date.day(),GPS.time.hour(),GPS.time.minute(),GPS.time.second());

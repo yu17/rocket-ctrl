@@ -29,8 +29,16 @@ void disp_setup() {
 }
 
 void disp_switch() {
-	if (disp_flag_on) disp.ssd1306_command(SSD1306_DISPLAYOFF);
-	else disp.ssd1306_command(SSD1306_DISPLAYON);
+	if (disp_flag_on) {
+		disp.ssd1306_command(SSD1306_DISPLAYOFF);
+		disp.ssd1306_command(SSD1306_CHARGEPUMP);
+		disp.ssd1306_command(0x10);//Turn off charge pump
+	}
+	else {
+		disp.ssd1306_command(SSD1306_CHARGEPUMP);
+		disp.ssd1306_command(0x14);//Turn off charge pump
+		disp.ssd1306_command(SSD1306_DISPLAYON);
+	}
 	disp_flag_on=!disp_flag_on;
 }
 

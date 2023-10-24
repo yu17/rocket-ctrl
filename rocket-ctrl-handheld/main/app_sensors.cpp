@@ -21,7 +21,7 @@ void *app_sensors(const void *param) {
     // P_ovs = 16
 
 	while (1) {
-		if (!TICK%20 || force_refresh) {
+		if (!(TICK%20) || force_refresh) {
 			force_refresh=0;
 			if (page==0) {
 				heading_ccw=(compass.readHeading()+compass_offset)%360;
@@ -85,6 +85,8 @@ void *app_sensors(const void *param) {
                     Adafruit_BMP280::BMP280_FILTER_OFF,
                     Adafruit_BMP280::BMP280_STANDBY_MS_4000);
 				return NULL;
+			case B:
+				force_refresh=1;
 			default:
 				break;
 		}
